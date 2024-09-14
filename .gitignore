@@ -1,0 +1,56 @@
+# Ignore build directories
+/build/
+/out/
+/bin/
+/lib/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/Makefile
+
+# Ignore VS Code configuration files
+.vscode/
+.vscode/tasks.json
+.vscode/launch.json
+/.vscode/settings.json
+.vscode/cmake-kits.json
+.vscode/cmake-tools.json
+
+# Ignore CMake generated files
+*.cmake
+CMakeLists.txt.user
+
+# Ignore macOS-specific files
+.DS_Store
+
+# Ignore binary files and other build artifacts
+*.obj
+*.o
+*.exe
+*.out
+*.app
+*.lib
+*.a
+*.so
+*.dll
+*.dylib
+*.pdb
+*.log
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.~*
+
+# Ignore generated documentation
+/doc/
+/docs/
+/*.html
+*.pdf
+
+# Ignore package output (e.g., CPack)
+CPackConfig.cmake
+CPackSourceConfig.cmake
