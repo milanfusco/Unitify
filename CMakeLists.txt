@@ -5,21 +5,65 @@ project(Unitify VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Enable testing if necessary
+# Enable testing with CTest
 include(CTest)
 enable_testing()
 
-# Use GLOB to collect all source files
-file(GLOB TARGET_SRC "./src/*.cpp")
+#header files
+file(GLOB HEADERS
+    "./include/IOStreamHandler.h"
+    "./include/Length.h"
+    "./include/Mass.h"
+    "./include/Measurement.h"
+    "./include/MeasurementFileProcessor.h"
+    "./include/MeasurementValidator.h"
+    "./include/ReportGenerator.h"
+    "./include/StatisticsCalculator.h"
+    "./include/TimeUnit.h"
+    "./include/UnitConverter.h"
+    "./include/Units.h"
+    "./include/Volume.h"
+)
 
-# Create the executable with a meaningful name
-add_executable(Unitify ${TARGET_SRC})
+# Collect source files for the main application
+file(GLOB MAIN_SRC
+    "./src/main.cpp"
+    "./src/Units.cpp"
+    "./src/UnitConverter.cpp"
+    "./src/UnitImplementations.cpp"
+    "./src/Measurement.cpp"
+    "./src/MeasurementFileProcessor.cpp"
+    "./src/MeasurementValidator.cpp"
+    "./src/IOStreamHandler.cpp"
+    "./src/ReportGenerator.cpp"
+    "./src/StatisticsCalculator.cpp")
 
-# Set include directories for this target
+# Collect source files for the tests (excluding main.cpp to avoid duplicate main symbols)
+file(GLOB TEST_SRC
+    "./src/TestUnitify.cpp"
+    "./src/Units.cpp"
+    "./src/UnitConverter.cpp"
+    "./src/UnitImplementations.cpp"
+    "./src/Measurement.cpp"
+    "./src/MeasurementFileProcessor.cpp"
+    "./src/MeasurementValidator.cpp"
+    "./src/IOStreamHandler.cpp"
+    "./src/ReportGenerator.cpp"
+    "./src/StatisticsCalculator.cpp"
+)
+
+# Create the main application executable
+add_executable(Unitify ${MAIN_SRC})
+
+# Create the test executable
+add_executable(TestUnitify ${TEST_SRC})
+
+# Set include directories for both targets
 target_include_directories(Unitify PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(TestUnitify PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
 
-# Link libraries if necessary 
-# target_link_libraries(new_project_main PRIVATE <library_name>)
+# Add the test executable to CTest
+add_test(NAME UnitTests COMMAND TestUnitify)
 
 # Packaging settings (for cpack if needed)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
