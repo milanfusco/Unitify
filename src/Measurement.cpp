@@ -45,8 +45,6 @@ Measurement Measurement::divide(const Measurement& m) const {
     return Measurement(magnitude / m.magnitude, unit);
 }
 
-enum Measurement::ComparisonResult { LESS_THAN=-1, GREATER_THAN=1, EQUAL=0 };
-
 Measurement::ComparisonResult Measurement::compareTo(const Measurement& m) const {
     double baseThis = unit->toBaseUnit(magnitude);
     double baseOther = m.unit->toBaseUnit(m.magnitude);
