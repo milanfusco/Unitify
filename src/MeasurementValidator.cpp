@@ -13,13 +13,13 @@
 #include <set>
 
 bool MeasurementValidator::validateMeasurement(const Measurement& m) {
-    return m.getMagnitude() >= 0; // Ensure magnitude is non-negative
+    return m.getMagnitude() >= 0;
 }
 
 bool MeasurementValidator::validateUnit(const std::string& unitStr) {
-    std::set<std::string> validUnits = {"millimeters", "centimeters", "meters", "kilometers",
-                                        "milliliters", "centiliters", "liters", "kiloliters",
-                                        "milligrams", "centigrams", "grams", "kilograms",
-                                        "seconds", "minutes", "hours"};
+    std::set<std::string> validUnits = {"millimeters", "mm", "centimeters", "cm", "meters", "m", "kilometers", "km",
+                                        "milliliters", "mL", "centiliters", "cL", "liters", "L", "kiloliters", "kL",
+                                        "milligrams", "mg", "centigrams", "cg", "grams", "g", "kilograms", "kg",
+                                        "seconds", "s", "minutes", "min", "hours", "hr"};
     return validUnits.find(unitStr) != validUnits.end();
 }

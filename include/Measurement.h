@@ -13,6 +13,8 @@
 
 #include <iostream>
 #include <string>
+#include <stdexcept> // For std::invalid_argument
+#include <sstream>   // For std::stringstream
 #include "Units.h"
 
 /**
@@ -96,21 +98,31 @@ public:
      */
     Measurement divide(const Measurement &m) const;
 
-    /**
+    /** 
+     * @enum ComparisonResult
      * @brief Compares two Measurement objects.
-     *
-     * @param m The Measurement object to compare against.
      * @return An integer representing the comparison result:
      *         - Negative if this object is less than `m`.
      *         - Zero if this object is equal to `m`.
      *         - Positive if this object is greater than `m`.
      */
-    int compareTo(const Measurement &m) const;
+    enum class ComparisonResult
+    {
+        LESS_THAN = -1,  ///> The first Measurement is less than the second.
+        EQUAL = 0,       ///> The two Measurements are equal.
+        GREATER_THAN = 1 ///> The first Measurement is greater than the second.
+    };
 
     /**
-     * @brief Converts the measurement to the base unit.
+     * @brief Compares two Measurement objects.
+     *
+     * @param m The Measurement object to compare against.
+     * @return An enum representing the comparison result:
+     *         - LESS_THAN if this object is less than `m`.
+     *         - EQUAL if this object is equal to `m`.
+     *         - GREATER_THAN if this object is greater than `m`.
      */
-    void convertToBaseUnit();
+    ComparisonResult compareTo(const Measurement &m) const;
 
     /**
      * @brief Creates a Measurement object from a string representation.
@@ -119,6 +131,28 @@ public:
      * @return A Measurement object constructed from the parsed string.
      */
     static Measurement fromString(const std::string &str);
-};
 
+    /**
+     * @brief Ensures that two Measurement objects have the same unit.
+     *
+     * @param m The Measurement object to compare against.
+     */
+    void ensureSameUnit(const Measurement &m) const;
+
+    /**
+     * @brief Overloaded assignment operator.
+     * @param os The output stream.
+     * @param m The Measurement object to output.
+     * @return The output stream.
+     */
+    friend std::ostream& operator<<(std::ostream& os, const Measurement& m);
+
+    /**
+     * @brief Overloaded input operator.
+     * @param is The input stream.
+     * @param m The Measurement object to read into.
+     * @return The input stream.
+     */
+    friend std::istream& operator>>(std::istream& is, Measurement& m);
+};
 #endif // MEASUREMENT_H

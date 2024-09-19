@@ -25,16 +25,12 @@ Units* Measurement::getUnit() const {
 }
 
 Measurement Measurement::add(const Measurement& m) const {
-    if (unit->getName() != m.unit->getName()) {
-        throw std::invalid_argument("Units must be the same for addition.");
-    }
+    ensureSameUnit(m);  
     return Measurement(magnitude + m.magnitude, unit);
 }
 
 Measurement Measurement::subtract(const Measurement& m) const {
-    if (unit->getName() != m.unit->getName()) {
-        throw std::invalid_argument("Units must be the same for subtraction.");
-    }
+    ensureSameUnit(m);  
     return Measurement(magnitude - m.magnitude, unit);
 }
 
@@ -49,16 +45,22 @@ Measurement Measurement::divide(const Measurement& m) const {
     return Measurement(magnitude / m.magnitude, unit);
 }
 
-int Measurement::compareTo(const Measurement& m) const {
+enum Measurement::ComparisonResult { LESS_THAN=-1, GREATER_THAN=1, EQUAL=0 };
+
+Measurement::ComparisonResult Measurement::compareTo(const Measurement& m) const {
     double baseThis = unit->toBaseUnit(magnitude);
     double baseOther = m.unit->toBaseUnit(m.magnitude);
-    if (baseThis < baseOther) return -1;
-    if (baseThis > baseOther) return 1;
-    return 0;
+    if (baseThis < baseOther) 
+        return Measurement::ComparisonResult::LESS_THAN;
+    if (baseThis > baseOther) 
+        return Measurement::ComparisonResult::GREATER_THAN;
+    return Measurement::ComparisonResult::EQUAL;
 }
 
-void Measurement::convertToBaseUnit() {
-    magnitude = unit->toBaseUnit(magnitude);
+void Measurement::ensureSameUnit(const Measurement& m) const {
+    if (unit->getName() != m.unit->getName()) {
+        throw std::invalid_argument("Units must be the same for this operation.");
+    }
 }
 
 Measurement Measurement::fromString(const std::string& str) {
@@ -73,4 +75,23 @@ Measurement Measurement::fromString(const std::string& str) {
     }
 
     return Measurement(magnitude, unit);
+}
+
+std::ostream& operator<<(std::ostream& os, const Measurement& m) {
+    os << m.getMagnitude() << " " << m.getUnit()->getName();
+    return os;
+}
+
+std::istream& operator>>(std::istream& is, Measurement& m) {
+    double magnitude;
+    std::string unitStr;
+    is >> magnitude >> unitStr;
+
+    Units* unit = Units::getUnitByName(unitStr);
+    if (!unit) {
+        throw std::invalid_argument("Invalid unit type: " + unitStr);
+    }
+
+    m = Measurement(magnitude, unit);
+    return is;
 }
