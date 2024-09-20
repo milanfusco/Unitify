@@ -103,19 +103,19 @@ void testCalculations() {
     // Test addition
     Measurement m1(50.0, &grams);
     Measurement m2(100.0, &grams);
-    Measurement resultAdd = m1.add(m2);
+    Measurement resultAdd = m1 + m2;
     assert(resultAdd.getMagnitude() == 150.0);  // 50g + 100g = 150g
     
     // Test subtraction
-    Measurement resultSub = m2.subtract(m1);
+    Measurement resultSub = m2 - m1;
     assert(resultSub.getMagnitude() == 50.0);  // 100g - 50g = 50g
     
     // Test multiplication
-    Measurement resultMul = m1.multiply(m2);
+    Measurement resultMul = m1 * m2;
     assert(resultMul.getMagnitude() == 5000.0);  // 50g * 100g = 5000g^2 (arbitrary unit for test)
     
     // Test division
-    Measurement resultDiv = m2.divide(m1);
+    Measurement resultDiv = m2/m1;
     assert(resultDiv.getMagnitude() == 2.0);  // 100g / 50g = 2
 }
 

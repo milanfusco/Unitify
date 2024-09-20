@@ -26,14 +26,9 @@
 #include <variant>
 #include <stdexcept>
 
-/**
- * @namespace anonymous (not the hacktivist group :P)
- * @brief Anonymous namespace to encapsulate the MeasurementOrOperator type and validOperators set.
- */
-namespace { 
-    using MeasurementOrOperator = std::variant<Measurement, std::string>; ///< Type to represent a Measurement or an operator.
-    static const std::set<std::string> validOperators = {"+", "-", "*", "/", ">", "<", ">=", "<=", "==", "!="}; ///< Set of valid operators.
-}
+
+using MeasurementOrOperator = std::variant<Measurement, std::string>; ///< Type to represent a Measurement or an operator.
+    
 
 /**
  * @class MeasurementFileProcessor
@@ -46,7 +41,7 @@ namespace {
 class MeasurementFileProcessor {
 private:
     std::string fileName;   ///< The name of the file containing measurement data.
-    std::vector<Measurement> measurementLine; ///< A vector of Measurement objects and operators parsed from the file.
+    std::vector<MeasurementOrOperator> measurementLine; ///< A vector of Measurement objects and operators parsed from the file.
     std::vector<std::vector<MeasurementOrOperator>> measurementsList;  ///< A vector of vectors of lines of measurements and operators from the file.
     bool isFileLoaded;  ///< Flag to check if the file has been successfully loaded.
      bool isValidOperator(const std::string& op); ///> Checks if the operator is valid.

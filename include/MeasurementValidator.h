@@ -16,6 +16,11 @@
 #define MEASUREMENTVALIDATOR_H
 
 #include "Measurement.h"
+#include "Units.h"
+#include "Mass.h"
+#include "Length.h"
+#include "Volume.h"
+#include "TimeUnit.h"
 #include <string>
 
 /**

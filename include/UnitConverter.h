@@ -46,6 +46,8 @@ public:
      * @return The conversion factor between the two units.
      */
     static double getConversionFactor(Units* fromUnit, Units* toUnit);
+
 };
+
 
 #endif // UNITCONVERTER_H

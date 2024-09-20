@@ -24,13 +24,20 @@
 #include <variant>
 #include <stdexcept>
 
+/**
+ * @namespace anonymous (not the hacktivist group :P)
+ * @brief Anonymous namespace to encapsulate the MeasurementOrOperator type and validOperators set.
+ */
+namespace { 
+    static const std::set<std::string> validOperators = {"+", "-", "*", "/", ">", "<", ">=", "<=", "==", "!="}; ///< Set of valid operators.
+}
+
 MeasurementFileProcessor::MeasurementFileProcessor(const std::string& fileName) 
     : fileName(fileName), isFileLoaded(false) {}
 
 bool MeasurementFileProcessor::isValidOperator(const std::string& op) {
     return validOperators.find(op) != validOperators.end();
 }
-
 
 void MeasurementFileProcessor::readFile() {
     std::ifstream file(fileName);
@@ -50,7 +57,7 @@ void MeasurementFileProcessor::readFile() {
             // Extract measurement strings and operators
             iss >> m1_str >> operator_a >> m2_str >> operator_b >> m3_str;
 
-            // Use the fromString method to parse each measurement
+            // Parse each measurement
             Measurement m1 = Measurement::fromString(m1_str);
             Measurement m2 = Measurement::fromString(m2_str);
             Measurement m3 = Measurement::fromString(m3_str);
@@ -61,8 +68,8 @@ void MeasurementFileProcessor::readFile() {
                 continue; // Skip invalid lines
             }
 
-            // Store the measurements and operators in the same line (in their original order)
-            std::vector<MeasurementOrOperator> measurementLine = {m1, operator_a, m2, operator_b, m3};
+            // Store measurements and operators in measurementLine
+            measurementLine = {m1, operator_a, m2, operator_b, m3};
 
             // Add the structured measurementLine to measurementsList
             measurementsList.push_back(measurementLine);

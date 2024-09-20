@@ -60,6 +60,12 @@ public:
      */
     std::string getName() const { return name; }
 
+    /** 
+     * @brief Get the type of the unit
+     * @return Type of the unit
+     */
+    std::string getType() const { return "Units"; }
+
     /**
      * @brief Retrieves a unit object by its name.
      * 

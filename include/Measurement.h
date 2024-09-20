@@ -13,8 +13,8 @@
 
 #include <iostream>
 #include <string>
-#include <stdexcept> // For std::invalid_argument
-#include <sstream>   // For std::stringstream
+#include <stdexcept> 
+#include <sstream>
 #include "Units.h"
 
 /**
@@ -31,6 +31,13 @@ class Measurement
 private:
     double magnitude; ///> The numeric value of the measurement
     Units *unit;      ///> Pointer to Units base class representing the unit
+
+    /**
+     * @brief Ensures that addition or subtraction operations are performed on the same type of measurement.
+     *
+     * @param m The Measurement object to compare against.
+     */
+    void ensureSameType(const Measurement &m) const;
 
 public:
     /**
@@ -68,61 +75,80 @@ public:
     Units *getUnit() const;
 
     /**
-     * @brief Adds two Measurement objects.
-     *
+     * @brief Overload the addition operator.
+     * 
      * @param m The Measurement object to add.
      * @return A new Measurement object representing the sum.
      */
-    Measurement add(const Measurement &m) const;
+    Measurement operator+(const Measurement& m) const;
 
     /**
-     * @brief Subtracts one Measurement object from another.
-     *
+     * @brief Overload the subtraction operator.
+     * 
      * @param m The Measurement object to subtract.
      * @return A new Measurement object representing the difference.
      */
-    Measurement subtract(const Measurement &m) const;
+    Measurement operator-(const Measurement& m) const;
 
     /**
-     * @brief Multiplies two Measurement objects.
-     *
-     * @param m The Measurement object to multiply.
+     * @brief Overload the multiplication operator.
+     * 
+     * @param m The Measurement object to multiply with.
      * @return A new Measurement object representing the product.
      */
-    Measurement multiply(const Measurement &m) const;
+    Measurement operator*(const Measurement& m) const;
 
     /**
-     * @brief Divides one Measurement object by another.
+     * @brief Overload the division operator.
+     * 
      * @param m The Measurement object to divide by.
      * @return A new Measurement object representing the quotient.
+     * @throws std::invalid_argument if division by zero is attempted.
      */
-    Measurement divide(const Measurement &m) const;
+    Measurement operator/(const Measurement& m) const;
 
-    /** 
-     * @enum ComparisonResult
-     * @brief Compares two Measurement objects.
-     * @return An integer representing the comparison result:
-     *         - Negative if this object is less than `m`.
-     *         - Zero if this object is equal to `m`.
-     *         - Positive if this object is greater than `m`.
-     */
-    enum class ComparisonResult
-    {
-        LESS_THAN = -1,  ///> The first Measurement is less than the second.
-        EQUAL = 0,       ///> The two Measurements are equal.
-        GREATER_THAN = 1 ///> The first Measurement is greater than the second.
-    };
+    // Comparison Operations
 
     /**
-     * @brief Compares two Measurement objects.
-     *
-     * @param m The Measurement object to compare against.
-     * @return An enum representing the comparison result:
-     *         - LESS_THAN if this object is less than `m`.
-     *         - EQUAL if this object is equal to `m`.
-     *         - GREATER_THAN if this object is greater than `m`.
+     * @brief Overload the equality operator.
+     * 
+     * @param m The Measurement object to compare with.
+     * @return True if the magnitudes and units are equal, false otherwise.
      */
-    ComparisonResult compareTo(const Measurement &m) const;
+    bool operator==(const Measurement& m) const;
+
+    /**
+     * @brief Overload the inequality operator.
+     * 
+     * @param m The Measurement object to compare with.
+     * @return True if the objects are not equal, false otherwise.
+     */
+    bool operator!=(const Measurement& m) const;
+
+    /**
+     * @brief Overload the less than operator.
+     * 
+     * @param m The Measurement object to compare with.
+     * @return True if this object is less than the other, false otherwise.
+     */
+    bool operator<(const Measurement& m) const;
+
+    /**
+     * @brief Overload the greater than operator.
+     * 
+     * @param m The Measurement object to compare with.
+     * @return True if this object is greater than the other, false otherwise.
+     */
+    bool operator>(const Measurement& m) const;
+
+    /**
+     * @brief Overload the assignment operator.
+     * 
+     * @param m The Measurement object to assign from.
+     * @return A reference to the assigned object.
+     */
+    Measurement operator=(const Measurement& m);
+
 
     /**
      * @brief Creates a Measurement object from a string representation.
@@ -131,13 +157,6 @@ public:
      * @return A Measurement object constructed from the parsed string.
      */
     static Measurement fromString(const std::string &str);
-
-    /**
-     * @brief Ensures that two Measurement objects have the same unit.
-     *
-     * @param m The Measurement object to compare against.
-     */
-    void ensureSameUnit(const Measurement &m) const;
 
     /**
      * @brief Overloaded assignment operator.
