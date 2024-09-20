@@ -15,6 +15,8 @@
 #include "StatisticsCalculator.h"
 #include "ReportGenerator.h"
 #include "MeasurementFileProcessor.h"
+#include <limits.h> // For PATH_MAX
+#include <unistd.h> // For getcwd
 
 // Function to process a single file
 void processFile(const std::string& fileName, std::vector<std::string>& responses, std::vector<std::string>& sortedResponses) {
@@ -29,7 +31,7 @@ void processFile(const std::string& fileName, std::vector<std::string>& response
 }
 
 // Function to compute and display statistics for a given list of measurements
-void computeAndDisplayStatistics(const std::vector<std::string>& responses) {
+void computeAndDisplayStatistics(const std::vector<std::string>& responses, const std::string& fileName) {
     std::vector<Measurement> measurements;
     for (const auto& response : responses) {
         Measurement m = Measurement::fromString(response);
@@ -40,50 +42,20 @@ void computeAndDisplayStatistics(const std::vector<std::string>& responses) {
     double mode = StatisticsCalculator::computeMode(measurements);
     double median = StatisticsCalculator::computeMedian(measurements);
 
+    std::cout << "\nStatistics for " << fileName << ":\n";
     std::cout << "Mean: " << mean << "\n";
     std::cout << "Mode: " << mode << "\n";
     std::cout << "Median: " << median << "\n";
 }
 
-int main() {
-    // Vectors to store responses for both files
-    std::vector<std::string> responsesYear1, sortedResponsesYear1;
-    std::vector<std::string> responsesYear2, sortedResponsesYear2;
-
-    // Process both files
-    processFile("year1measurements.txt", responsesYear1, sortedResponsesYear1);
-    processFile("year2measurements.txt", responsesYear2, sortedResponsesYear2);
-
-    // Display results
-    std::cout << "Responses for year1measurements.txt in original order:\n";
-    for (const auto& response : responsesYear1) {
-        std::cout << response << "\n";
-    }
-
-    std::cout << "\nResponses for year1measurements.txt in ascending order:\n";
-    for (const auto& response : sortedResponsesYear1) {
-        std::cout << response << "\n";
-    }
-
-    std::cout << "\nResponses for year2measurements.txt in original order:\n";
-    for (const auto& response : responsesYear2) {
-        std::cout << response << "\n";
-    }
-
-    std::cout << "\nResponses for year2measurements.txt in ascending order:\n";
-    for (const auto& response : sortedResponsesYear2) {
-        std::cout << response << "\n";
-    }
-
-    // Compute and display statistics
-    std::cout << "\nStatistics for year1measurements.txt:\n";
-    computeAndDisplayStatistics(responsesYear1);
-
-    std::cout << "\nStatistics for year2measurements.txt:\n";
-    computeAndDisplayStatistics(responsesYear2);
-
-    // Save output to a file
-    std::ofstream outputFile("measurement_report.txt");
+// Function to save output to a file
+void saveOutputToFile(const std::string& outputFileName, 
+                      const std::vector<std::string>& responsesYear1, 
+                      const std::vector<std::string>& sortedResponsesYear1, 
+                      const std::vector<std::string>& responsesYear2, 
+                      const std::vector<std::string>& sortedResponsesYear2) {
+    std::ofstream outputFile(outputFileName);
+    
     outputFile << "Responses for year1measurements.txt in original order:\n";
     for (const auto& response : responsesYear1) {
         outputFile << response << "\n";
@@ -104,13 +76,67 @@ int main() {
         outputFile << response << "\n";
     }
 
-    outputFile << "\nStatistics for year1measurements.txt:\n";
-    computeAndDisplayStatistics(responsesYear1);
-
-    outputFile << "\nStatistics for year2measurements.txt:\n";
-    computeAndDisplayStatistics(responsesYear2);
-
     outputFile.close();
+}
+
+// Main function refactored to take file paths as command-line arguments
+int main(int argc, char* argv[]) {
+    if (argc < 3) {
+        std::cerr << "Usage: " << argv[0] << " <year1_file> <year2_file>" << std::endl;
+        return 1;
+    }
+
+    // File paths from command-line arguments
+    std::string year1File = argv[1];
+    std::string year2File = argv[2];
+
+    // Vectors to store responses for both files
+    std::vector<std::string> responsesYear1, sortedResponsesYear1;
+    std::vector<std::string> responsesYear2, sortedResponsesYear2;
+
+    // Process both files
+    processFile(year1File, responsesYear1, sortedResponsesYear1);
+    processFile(year2File, responsesYear2, sortedResponsesYear2);
+
+    // Display results for year1
+    std::cout << "Responses for " << year1File << " in original order:\n";
+    for (const auto& response : responsesYear1) {
+        std::cout << response << "\n";
+    }
+
+    std::cout << "\nResponses for " << year1File << " in ascending order:\n";
+    for (const auto& response : sortedResponsesYear1) {
+        std::cout << response << "\n";
+    }
+
+    // Display results for year2
+    std::cout << "\nResponses for " << year2File << " in original order:\n";
+    for (const auto& response : responsesYear2) {
+        std::cout << response << "\n";
+    }
+
+    std::cout << "\nResponses for " << year2File << " in ascending order:\n";
+    for (const auto& response : sortedResponsesYear2) {
+        std::cout << response << "\n";
+    }
+
+    // Compute and display statistics
+    computeAndDisplayStatistics(responsesYear1, year1File);
+    computeAndDisplayStatistics(responsesYear2, year2File);
+
+    // Output file name
+    std::string outputFileName = "measurement_report.txt";
+
+    // Save output to a file
+    saveOutputToFile(outputFileName, responsesYear1, sortedResponsesYear1, responsesYear2, sortedResponsesYear2);
+
+    // Get the current working directory and print the output file path
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) != nullptr) {
+        std::cout << "\nOutput saved to: " << cwd << "/" << outputFileName << "\n";
+    } else {
+        std::cerr << "Error retrieving current working directory." << std::endl;
+    }
 
     return 0;
-}
+}   
