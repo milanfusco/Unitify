@@ -9,6 +9,7 @@
 
 #include "Measurement.h"
 #include "UnitConverter.h"
+#include "MeasurementValidator.h"
 #include <stdexcept>
 #include <sstream>
 
@@ -68,7 +69,7 @@ Measurement Measurement::fromString(const std::string& str) {
     iss >> magnitude >> unitStr;
 
     Units* unit = Units::getUnitByName(unitStr);
-    if (!unit) {
+    if (MeasurementValidator::validateUnit(unitStr)==false) {
         throw std::invalid_argument("Invalid unit type in string: " + unitStr);
     }
 
@@ -86,7 +87,7 @@ std::istream& operator>>(std::istream& is, Measurement& m) {
     is >> magnitude >> unitStr;
 
     Units* unit = Units::getUnitByName(unitStr);
-    if (!unit) {
+    if (MeasurementValidator::validateUnit(unitStr)==false) {
         throw std::invalid_argument("Invalid unit type: " + unitStr);
     }
 
