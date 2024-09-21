@@ -14,11 +14,12 @@
 #include "MeasurementValidator.h"
 #include "UnitConverter.h"
 
-Measurement::Measurement(double magnitude, Units* unit)
+Measurement::Measurement() : magnitude(0.0), unit(nullptr) {} ///> Default constructor
+Measurement::Measurement(double magnitude, Units* unit) ///> Regular constructor
     : magnitude(magnitude), unit(unit) {}
-Measurement::Measurement(const Measurement& other)
+Measurement::Measurement(const Measurement& other) ///> Copy constructor
     : magnitude(other.magnitude), unit(other.unit) {}
-Measurement::~Measurement() {}
+Measurement::~Measurement() {} ///> Destructor
 
 double Measurement::getMagnitude() const {
   return magnitude;

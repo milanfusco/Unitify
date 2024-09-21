@@ -40,6 +40,12 @@ private:
     void ensureSameType(const Measurement &m) const;
 
 public:
+
+    /**
+     * @brief Default constructor for the Measurement class.
+     */
+    Measurement() : magnitude(0.0), unit(nullptr) {}
+    
     /**
      * @brief Constructs a new Measurement object.
      *

@@ -8,6 +8,7 @@
 #include "Length.h"
 #include "Volume.h"
 #include "TimeUnit.h"
+#include "CompoundUnit.h"
 
 Mass::Mass(const std::string& name, double baseUnitFactor) : Units(name, baseUnitFactor) {}
 
