@@ -1,79 +1,75 @@
 /**
  * @file CompoundUnit.cpp
- * @brief Implementation of the CompoundUnit class.
+ * B¸¸¸¸¸¸¸Implementation of the CompoundUnit class.
  * A CompoundUnit is a combination of multiple units with operators.
  * For example, "g/m/s" is a CompoundUnit with grams, meters, and seconds.
  * The CompoundUnit can perform operations between the units.
  * The CompoundUnit is a subclass of the Units class.
  */
 #include "CompoundUnit.h"
-#include "Measurement.h"
-#include "Units.h"
-#include <stdexcept>
-#include <string>
-#include <vector>
 
-class CompoundUnit : public Units {
-private:
-    std::vector<Units*> units;        // List of base units (e.g., grams, meters, seconds)
-    std::vector<char> operators;      // List of operators ('*' or '/')
-    Measurement totalMeasurement;     // Store the combined measurement (magnitude + unit)
+CompoundUnit::CompoundUnit(std::shared_ptr<Units> unit)
+    : Units(unit->getName(), unit->getBaseFactor()) {  //> single unit
+  compoundUnitName = unit->getName();
+}
 
-public:
-    // Constructor for a single unit
-    CompoundUnit::CompoundUnit(const Measurement& measurement, const std::string& unitName)
-        : totalMeasurement(measurement),  // Initialize totalMeasurement
-        Units(unitName, 1)  // Call Units constructor
-    {
+CompoundUnit::CompoundUnit(const std::vector<std::shared_ptr<Units> > unitList,
+                           const std::vector<char>& operatorList)
+    : Units(static_cast<std::string>(compoundUnitName), 1.0), operators(operatorList) {
+  if (units.empty()) {
+  }
+  units = unitList;
+  buildCompoundUnitName();
+}
+
+void CompoundUnit::buildCompoundUnitName() {
+  if (units.empty()) {
+    throw std::invalid_argument("No units provided to build name.");
+  }
+  std::stringstream nameStream;
+  nameStream << units[0]->getName();
+  for (size_t i = 0; i < operators.size(); i++) {
+    nameStream << ' ' << operators[i] << ' ' << units[i + 1]->getName();
+  }
+  compoundUnitName = nameStream.str();
+}
+
+std::string CompoundUnit::getCompoundName() const {
+  return compoundUnitName;
+}
+
+std::string CompoundUnit::getType() const {
+  return "CompoundUnit";
+}
+
+std::shared_ptr<Units> CompoundUnit::getBaseUnit() const {
+  std::vector<std::shared_ptr<Units> > baseUnits;
+  for (auto& unit : units) {
+    baseUnits.push_back(std::shared_ptr<Units>(unit->getBaseUnit()));
+  }
+  return std::make_shared<CompoundUnit>(baseUnits, operators);
+}
+
+double CompoundUnit::toBaseUnit(double value) const {
+  double result = value;
+  for (size_t i = 0; i < operators.size(); ++i) {
+    if (operators[i] == '*') {
+      result *= units[i + 1]->toBaseUnit(1.0);
+    } else if (operators[i] == '/') {
+      result /= units[i + 1]->toBaseUnit(1.0);
     }
+  }
+  return result;
+}
 
-    // Constructor for multiple units with operators
-    CompoundUnit::CompoundUnit(const std::vector<Measurement>& measurements, const std::vector<char>& operatorList, const std::string& unitName)
-        : Units(unitName, 1),  // Call Units constructor
-        operators(operatorList) {
-        if (measurements.size() != operatorList.size() + 1) {
-            throw std::invalid_argument("Mismatch between units and operators.");
-        }
-        totalMeasurement = measurements[0];  // Initialize with the first measurement
-        units.push_back(measurements[0].getUnit());
-
-        // Perform the operations between the measurements
-        for (size_t i = 0; i < operatorList.size(); ++i) {
-            if (operatorList[i] == '*') {
-                totalMeasurement = totalMeasurement * measurements[i + 1];
-            } else if (operatorList[i] == '/') {
-                totalMeasurement = totalMeasurement / measurements[i + 1];
-            }
-            units.push_back(measurements[i + 1].getUnit());
-        }
+double CompoundUnit::fromBaseUnit(double value) const {
+  double result = value;
+  for (size_t i = 0; i < operators.size(); ++i) {
+    if (operators[i] == '*') {
+      result *= units[i + 1]->fromBaseUnit(1.0);
+    } else if (operators[i] == '/') {
+      result /= units[i + 1]->fromBaseUnit(1.0);
     }
-
-    // Method to add a measurement dynamically
-    void addMeasurement(const Measurement& measurement, char op) {
-        units.push_back(measurement.getUnit());
-        operators.push_back(op);
-        if (op == '*') {
-            totalMeasurement = totalMeasurement * measurement;
-        } else if (op == '/') {
-            totalMeasurement = totalMeasurement / measurement;
-        }
-    }
-
-    // Get the name of the compound unit (e.g., "g/m/s")
-    std::string getName() const {
-        std::string name = units[0]->getName();  // Start with the first unit
-        for (size_t i = 0; i < operators.size(); ++i) {
-            name += " " + std::string(1, operators[i]) + " " + units[i + 1]->getName();
-        }
-        return name;
-    }
-
-    // Get the total magnitude after all operations
-    double getMagnitude() const  {
-        return totalMeasurement.getMagnitude();  // Return the combined magnitude
-    }
-
-    Units* getUnit() const  {
-        return totalMeasurement.getUnit();  // Return the final unit
-    }
-};
+  }
+  return result;
+}

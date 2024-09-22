@@ -1,72 +1,110 @@
 /**
  * @file CompoundUnit.h
  * @brief Compound unit class for representing combined units of measurement.
- * 
- * The CompoundUnit class represents a compound unit formed by multiple units and operators.
- * For example, "g/m/s" is a CompoundUnit with grams, meters, and seconds.
- * The CompoundUnit can perform operations between the units.
- * The CompoundUnit is a subclass of the Units class.
+ *
+ * The CompoundUnit class represents a compound unit formed by multiple units
+ * and operators. For example, "g/m/s" is a CompoundUnit with grams, meters, and
+ * seconds. The CompoundUnit can perform operations between the units. The
+ * CompoundUnit is a subclass of the Units class.
  * @version 0.1
- * 
+ *
  */
 
 #ifndef COMPOUNDUNIT_H
 #define COMPOUNDUNIT_H
 
-#include <vector>
+#include <sstream>
 #include <string>
+#include <vector>
 #include <stdexcept>
+#include <memory>
 #include "Units.h"
-#include "Measurement.h"
 
-/// @class CompoundUnit
-/// @brief Represents a compound unit formed by multiple units and operators (e.g., "g/m/s").
 class CompoundUnit : public Units {
-private:
-    std::vector<Units*> units;        ///< List of base units (e.g., grams, meters, seconds)
-    std::vector<char> operators;      ///< List of operators ('*' or '/')
-    Measurement totalMeasurement;     ///< Store the combined measurement (magnitude + unit)
+ private:
+  std::vector<std::shared_ptr<Units> >
+      units;  ///> List of base units (e.g., grams, meters, seconds)
+  std::vector<char> operators;   ///> List of operators ('*' or '/')
+  std::string compoundUnitName;  ///> Name of the compound unit
 
-public:
-    /**
-     * @brief 
-     * @param measurement The initial measurement (magnitude + unit).
-     *  @param unitName Name for the compound unit.
-     */
-    explicit CompoundUnit(const Measurement& measurement, const std::string& unitName);
+  /**
+   * @brief Sanitizes a string by removing null characters.
+   *
+   * @param input The input string to sanitize.
+   * @return The sanitized string.
+   */
+  std::string sanitizeString(const std::string &input) const;
 
-    /**
-        * @brief Constructor for multiple units with operators.
-        * @param measurements Vector of measurements to combine.
-        * @param operatorList Vector of operators ('*' or '/') for combining the measurements.
-        * @param unitName Name for the compound unit.
-        */
-    CompoundUnit(const std::vector<Measurement>& measurements, const std::vector<char>& operatorList, const std::string& unitName);
+  /**
+   * @brief Builds the name of the compound unit.
+   *
+   * The name of the compound unit is built by concatenating the names of the
+   * base units with the operators between them.
+   *
+   * For example, if the compound unit is "g/m/s", the name will be "grams /
+   * meters / seconds".
+   *
+   * @return void
+   */
+  void buildCompoundUnitName();
 
-    /**
-     * @brief Method to dynamically add a measurement and operator to the compound unit.
-     * @param measurement The measurement to be added.
-     * @param op The operator to be applied ('*' or '/').
-     */
-    void addMeasurement(const Measurement& measurement, char op);
+ public:
+  /**
+   * @brief CompoundUnit constructor for a single unit.
+   *
+   * This constructor creates a CompoundUnit with a single unit.
+   *
+   * @param unit
+   */
+  CompoundUnit(std::shared_ptr<Units> unit);
 
-    /**
-     * @brief Get the name of the compound unit (e.g., "g/m/s").
-     * @return A string representing the compound unit.
-     */
-    std::string getName() const ;
+  /**
+   * @brief CompoundUnit constructor for multiple units with operators.
+   *
+   * This constructor creates a CompoundUnit with multiple units and operators.
+   *
+   * @param unitList List of base units.
+   * @param operatorList List of operators.
+   */
+  CompoundUnit(const std::vector< std::shared_ptr<Units> > unitList,
+               const std::vector<char>& operatorList);
 
-    /**
-     * @brief Get the total magnitude of the compound unit after all operations.
-     * @return The resulting magnitude.
-     */
-    double getMagnitude() const ;
+  /**
+   * @brief Get the name of the compound unit.
+   *
+   * @return The name of the compound unit.
+   */
+  std::string getCompoundName() const;
 
-    /**
-     * @brief Get the unit of the compound measurement (final result unit).
-     * @return Pointer to the unit representing the result.
-     */
-    Units* getUnit() const ;
+  /**
+   * @brief Get the type of the compound unit.
+   *
+   * @return The type of the compound unit.
+   */
+  std::string getType() const override;
+
+  /**
+   * @brief Get the base unit of the compound unit.
+   *
+   * @return Pointer to the base unit of the compound unit.
+   */
+  std::shared_ptr<Units> getBaseUnit() const override;
+
+  /**
+   * @brief Convert a value to the base unit of the compound unit.
+   *
+   * @param value The value in the current unit.
+   * @return The equivalent value in the base unit.
+   */
+  double toBaseUnit(double value) const override;
+
+  /**
+   * @brief Convert a value from the base unit of the compound unit.
+   *
+   * @param value The value in the base unit.
+   * @return The equivalent value in the desired unit.
+   */
+  double fromBaseUnit(double value) const override;
 };
 
-#endif // COMPOUNDUNIT_H
+#endif  // COMPOUNDUNIT_H

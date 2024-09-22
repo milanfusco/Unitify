@@ -13,6 +13,7 @@
 #define UNITS_H
 
 #include <string>
+#include <memory>
 
 /**
  * @class Units
@@ -38,7 +39,37 @@ public:
      */
     Units(const std::string& name, double baseUnitFactor);
 
-    virtual ~Units() {}
+    virtual ~Units() = default; ///< Virtual destructor
+
+    /**
+     * @brief Equality operator for comparing units.
+     * 
+     * This operator checks if two units are equal based on their names.
+     * 
+     * @param right The right-hand side unit to compare.
+     * @return True if the units are equal, false otherwise.
+     */
+    bool operator==(const std::shared_ptr<Units>& right) const;
+
+    /** 
+     * @brief Get the name of the unit
+     * @return Name of the unit
+     */
+    std::string getName() const;
+
+    double getBaseFactor() const;
+
+    /** 
+     * @brief Get the type of the unit
+     * @return Type of the unit
+     */
+    virtual std::string getType() const = 0;
+
+    /** 
+     * @brief Get the base unit of the unit
+     * @return Pointer to the base unit
+     */
+    virtual std::shared_ptr<Units> getBaseUnit() const = 0;
 
     /** 
      * @brief Convert the value to the base unit
@@ -53,18 +84,7 @@ public:
      * @return Converted value from the base unit
      */
     virtual double fromBaseUnit(double value) const = 0; // Convert from base unit
-
-    /** 
-     * @brief Get the name of the unit
-     * @return Name of the unit
-     */
-    std::string getName() const { return name; }
-
-    /** 
-     * @brief Get the type of the unit
-     * @return Type of the unit
-     */
-    std::string getType() const { return "Units"; }
+    
 
     /**
      * @brief Retrieves a unit object by its name.
@@ -76,7 +96,31 @@ public:
      * @return A dynamically allocated pointer to the corresponding Units object.
      * @throws std::invalid_argument If the unit name is not recognized.
      */
-    static Units* getUnitByName(const std::string& unitName);
+    static std::shared_ptr<Units> getUnitByName(const std::string& unitName);
+
+    /**
+     * @brief Checks if a unit name corresponds to a compound unit.
+     * 
+     * This method checks if a given unit name corresponds to a compound unit 
+     * (e.g., "g/m/s" is a compound unit with grams, meters, and seconds,
+     * "kg*m/s^2" is a compound unit with kilograms, meters, and seconds squared).
+     * 
+     * @param unitName The name of the unit to check.
+     * @return True if the unit name corresponds to a compound unit, false otherwise.
+     */
+    static bool isCompoundUnitName(const std::string& unitName);
+
+    /**
+     * @brief Parses a compound unit name into its component units.
+     * 
+     * This method parses a compound unit name into its component units and operators.
+     * For example, "g/m/s" is parsed into grams, meters, and seconds.
+     * 
+     * @param unitName The name of the compound unit.
+     * @return A pointer to the CompoundUnit object representing the compound unit.
+     */
+   static std::shared_ptr<Units> parseCompoundUnit(const std::string& unitName);
 };
+
 
 #endif // UNITS_H

@@ -30,6 +30,19 @@ public:
     Mass(const std::string& name, double baseUnitFactor);
 
     /**
+     * @brief Get the type (Mass) of the unit
+     * @return Type of the unit (Mass)
+     */
+    std::string getType() const override;
+
+
+    /**
+     * @brief Get the base unit (grams) of the unit
+     * @return Pointer to the base unit (grams)
+     */
+    std::shared_ptr<Units> getBaseUnit() const override;
+
+    /**
      * @brief Converts a value to the base unit (grams).
      * @param value The value in the current unit.
      * @return The equivalent value in grams.
@@ -43,5 +56,7 @@ public:
      */
     double fromBaseUnit(double value) const override;
 };
+
+
 
 #endif // MASS_H

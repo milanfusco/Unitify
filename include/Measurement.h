@@ -16,6 +16,7 @@
 #include <stdexcept> 
 #include <sstream>
 #include "Units.h"
+#include "CompoundUnit.h"
 
 /**
  * @class Measurement
@@ -30,29 +31,31 @@ class Measurement
 {
 private:
     double magnitude; ///> The numeric value of the measurement
-    Units *unit;      ///> Pointer to Units base class representing the unit
-
-    /**
-     * @brief Ensures that addition or subtraction operations are performed on the same type of measurement.
-     *
-     * @param m The Measurement object to compare against.
-     */
-    void ensureSameType(const Measurement &m) const;
+    std::shared_ptr<Units> unit;      ///> Pointer to Units base class representing the unit
 
 public:
-
-    /**
-     * @brief Default constructor for the Measurement class.
-     */
-    Measurement() : magnitude(0.0), unit(nullptr) {}
-    
     /**
      * @brief Constructs a new Measurement object.
      *
      * @param magnitude The numeric value of the measurement.
      * @param unit A pointer to a Units object representing the unit of the measurement.
      */
-    Measurement(double magnitude, Units *unit); ///> Regular constructor
+    Measurement(double magnitude, std::shared_ptr<Units> unit); ///> Regular constructor
+
+    /**
+     * @brief Constructs a new Measurement object with a unit that is not a shared pointer.
+     *
+     * @param magnitude The numeric value of the measurement.
+     * @param unit A reference to a Units object representing the unit of the measurement.
+     */
+
+    /**
+     * @brief Constructs a new Measurement object with a compound unit.s
+     *
+     * @param magnitude The numeric value of the measurement.
+     * @param unit A pointer to a CompoundUnit object representing the compound unit of the measurement.
+     */
+    Measurement(double magnitude, std::shared_ptr<CompoundUnit> unit); ///> Constructor for CompoundUnit measurements
 
     /**
      * @brief Copy constructor for the Measurement class.
@@ -78,7 +81,29 @@ public:
      *
      * @return A pointer to the Units object representing the unit of the measurement.
      */
-    Units *getUnit() const;
+    std::shared_ptr<Units> getUnit() const;
+
+    /**
+     * @brief Retrieves the compound unit of the measurement.
+     *
+     * @return A pointer to the CompoundUnit object representing the compound unit of the measurement.
+     * @throws std::runtime_error if the unit is not a CompoundUnit.
+     */
+    std::shared_ptr<CompoundUnit> getCompoundUnit() const;
+
+    /**
+     * @brief Retrieves the name of the compound unit.
+     *
+     * @return The name of the compound unit.
+     */
+    std::string getCompoundUnitName() const;
+
+    /**
+     * @brief Ensures that addition or subtraction operations are performed on the same type of measurement.
+     *
+     * @param m The Measurement object to compare against.
+     */
+    void ensureSameType(const Measurement &m) const;
 
     /**
      * @brief Overload the addition operator.

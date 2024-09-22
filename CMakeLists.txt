@@ -22,13 +22,16 @@ file(GLOB HEADERS
     "./include/TimeUnit.h"
     "./include/UnitConverter.h"
     "./include/Units.h"
+    "./include/CompoundUnit.h"
     "./include/Volume.h"
+    
 )
 
 # Collect source files for the main application
 file(GLOB MAIN_SRC
     "./src/main.cpp"
     "./src/Units.cpp"
+    "./src/CompoundUnit.cpp"
     "./src/UnitConverter.cpp"
     "./src/UnitImplementations.cpp"
     "./src/Measurement.cpp"
@@ -50,6 +53,7 @@ file(GLOB TEST_SRC
     "./src/IOStreamHandler.cpp"
     "./src/ReportGenerator.cpp"
     "./src/StatisticsCalculator.cpp"
+    "./src/CompoundUnit.cpp"
 )
 
 # Create the main application executable

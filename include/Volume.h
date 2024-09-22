@@ -30,6 +30,18 @@ public:
     Volume(const std::string& name, double baseUnitFactor);
 
     /**
+     * @brief Get the type (Volume) of the unit
+     * @return Type of the unit (Volume)
+     */
+    std::string getType() const override;
+
+    /**
+     * @brief Get the base unit (liters) of the unit
+     * @return Pointer to the base unit (liters)
+     */
+    std::shared_ptr<Units> getBaseUnit() const override;
+
+    /**
      * @brief Converts a value to the base unit (liters).
      * @param value The value in the current unit.
      * @return The equivalent value in liters.

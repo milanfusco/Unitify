@@ -13,7 +13,7 @@
 #define UNITCONVERTER_H
 
 #include "Measurement.h"
-
+#include "Units.h"
 /**
  * @class UnitConverter
  * @brief A utility class for converting measurements between different units.
@@ -24,16 +24,15 @@
 class UnitConverter {
 public:
     /**
-     * @brief Converts a measurement to the specified unit.
+     * @brief Converts a measurement to its base unit.
      * 
-     * Converts the given measurement `m` to the specified unit `toUnit`.
-     * The result is a new Measurement object representing the converted value.
+     * Converts a given measurement to its base unit by converting the magnitude 
+     * to the base unit and returning a new Measurement object with the base unit.
      * 
-     * @param m The measurement to be converted.
-     * @param toUnit The target unit to convert the measurement to.
-     * @return A new Measurement object in the target unit.
+     * @param measurement The measurement to convert.
+     * @return A new Measurement object with the base unit.
      */
-    static Measurement convert(const Measurement& m, Units* toUnit);
+    static Measurement convertToBaseUnit(const Measurement& measurement);
 
     /**
      * @brief Computes the conversion factor between two units.

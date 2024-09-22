@@ -22,7 +22,7 @@ std::istream& IOStreamHandler::readFromStream(std::istream& in, Measurement& m) 
         throw std::invalid_argument("Invalid unit type.");
     }
 
-    Units* unit = Units::getUnitByName(unitStr); 
-    m = Measurement(magnitude, unit);
+    std::shared_ptr<Units> unit = Units::getUnitByName(unitStr); 
+    m = Measurement(magnitude, std::move(unit));
     return in;
 }

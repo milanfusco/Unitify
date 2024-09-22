@@ -30,6 +30,18 @@ public:
     Length(const std::string& name, double baseUnitFactor);
 
     /**
+     * @brief Get the type (Length) of the unit
+     * @return Type of the unit (Length)
+     */
+    std::string getType() const override;
+
+    /**
+     * @brief Get the base unit (meters) of the unit
+     * @return Pointer to the base unit (meters)
+     */
+    std::shared_ptr<Units> getBaseUnit() const override;
+
+    /**
      * @brief Converts a value to the base unit (meters).
      * @param value The value in the current unit.
      * @return The equivalent value in meters.

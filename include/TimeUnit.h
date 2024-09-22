@@ -20,15 +20,29 @@
  * 
  * The TimeUnit class handles conversion to and from a base unit (seconds) for various 
  * time units such as seconds, minutes, and hours.
+ * 
+ * Note: time.h is a reserved header file in C++, thus the name TimeUnit (TimeUnit.h) is used.
  */
 class TimeUnit : public Units {
 public:
     /**
-     * @brief Constructs a Time unit.
-     * @param name The name of the time unit.
+     * @brief Constructs a TimeUnit.
+     * @param name The name of the TimeUnit unit.
      * @param baseUnitFactor The factor to convert the unit to the base unit (seconds).
      */
     TimeUnit(const std::string& name, double baseUnitFactor);
+
+    /**
+     * @brief Get the type (TimeUnit) of the unit
+     * @return Type of the unit (TimeUnit)
+     */
+    std::string getType() const override;
+
+    /**
+     * @brief Get the base unit (seconds) of the unit
+     * @return Pointer to the base unit (seconds)
+     */
+    std::shared_ptr<Units> getBaseUnit() const override;
 
     /**
      * @brief Converts a value to the base unit (seconds).
