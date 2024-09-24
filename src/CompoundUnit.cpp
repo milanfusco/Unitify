@@ -1,6 +1,6 @@
 /**
  * @file CompoundUnit.cpp
- * B¸¸¸¸¸¸¸Implementation of the CompoundUnit class.
+ * Implementation of the CompoundUnit class.
  * A CompoundUnit is a combination of multiple units with operators.
  * For example, "g/m/s" is a CompoundUnit with grams, meters, and seconds.
  * The CompoundUnit can perform operations between the units.
@@ -13,13 +13,15 @@ CompoundUnit::CompoundUnit(std::shared_ptr<Units> unit)
   compoundUnitName = unit->getName();
 }
 
-CompoundUnit::CompoundUnit(const std::vector<std::shared_ptr<Units> > unitList,
+CompoundUnit::CompoundUnit(const std::vector<std::shared_ptr<Units>> unitList,
                            const std::vector<char>& operatorList)
-    : Units(static_cast<std::string>(compoundUnitName), 1.0), operators(operatorList) {
-  if (units.empty()) {
+    : Units("UnnamedCompoundUnit", 1.0), operators(operatorList) {
+  if (unitList.empty()) {
+    throw std::invalid_argument("No units provided to build compound unit.");
   }
   units = unitList;
   buildCompoundUnitName();
+  Units::setCompoundName(compoundUnitName);
 }
 
 void CompoundUnit::buildCompoundUnitName() {
@@ -42,8 +44,16 @@ std::string CompoundUnit::getType() const {
   return "CompoundUnit";
 }
 
+std::vector<std::shared_ptr<Units>> CompoundUnit::getUnits() const {
+  return units;
+}
+
+std::vector<char> CompoundUnit::getOperators() const {
+  return operators;
+}
+
 std::shared_ptr<Units> CompoundUnit::getBaseUnit() const {
-  std::vector<std::shared_ptr<Units> > baseUnits;
+  std::vector<std::shared_ptr<Units>> baseUnits;
   for (auto& unit : units) {
     baseUnits.push_back(std::shared_ptr<Units>(unit->getBaseUnit()));
   }

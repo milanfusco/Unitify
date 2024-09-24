@@ -35,6 +35,10 @@ std::string Units::getName() const {
   return name;
 }
 
+std::string Units::setCompoundName(const std::string& name) {
+  return name;
+}
+
 double Units::getBaseFactor() const {
   return baseUnitFactor;
 }

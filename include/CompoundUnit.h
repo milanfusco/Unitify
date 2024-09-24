@@ -13,16 +13,16 @@
 #ifndef COMPOUNDUNIT_H
 #define COMPOUNDUNIT_H
 
+#include <memory>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <stdexcept>
-#include <memory>
 #include "Units.h"
 
 class CompoundUnit : public Units {
  private:
-  std::vector<std::shared_ptr<Units> >
+  std::vector<std::shared_ptr<Units>>
       units;  ///> List of base units (e.g., grams, meters, seconds)
   std::vector<char> operators;   ///> List of operators ('*' or '/')
   std::string compoundUnitName;  ///> Name of the compound unit
@@ -33,7 +33,7 @@ class CompoundUnit : public Units {
    * @param input The input string to sanitize.
    * @return The sanitized string.
    */
-  std::string sanitizeString(const std::string &input) const;
+  std::string sanitizeString(const std::string& input) const;
 
   /**
    * @brief Builds the name of the compound unit.
@@ -66,8 +66,18 @@ class CompoundUnit : public Units {
    * @param unitList List of base units.
    * @param operatorList List of operators.
    */
-  CompoundUnit(const std::vector< std::shared_ptr<Units> > unitList,
+  CompoundUnit(const std::vector<std::shared_ptr<Units>> unitList,
                const std::vector<char>& operatorList);
+
+  /**
+   * @brief CompoundUnit constructor for a string representation of the unit.
+   *
+   * This constructor creates a CompoundUnit from a string representation of the
+   * unit.
+   *
+   * @param unitString The string representation of the compound unit.
+   */
+  bool isCompound() const override { return true; }
 
   /**
    * @brief Get the name of the compound unit.
@@ -82,6 +92,20 @@ class CompoundUnit : public Units {
    * @return The type of the compound unit.
    */
   std::string getType() const override;
+
+  /**
+   * @brief Get the list of units in the compound unit.
+   *
+   * @return List of units in the compound unit.
+   */
+  std::vector<std::shared_ptr<Units>> getUnits() const;
+
+  /**
+   * @brief Get the list of operators in the compound unit.
+   *
+   * @return List of operators in the compound unit.
+   */
+  std::vector<char> getOperators() const;
 
   /**
    * @brief Get the base unit of the compound unit.

@@ -11,13 +11,12 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include "CompoundUnit.h"
 #include "MeasurementValidator.h"
 #include "UnitConverter.h"
-#include "CompoundUnit.h"
 
 Measurement::Measurement(double magnitude, std::shared_ptr<Units> unit)
     : magnitude(magnitude), unit(unit) {}  ///> Regular constructor
-
 
 Measurement::Measurement(double magnitude, std::shared_ptr<CompoundUnit> unit)
     : magnitude(magnitude),
@@ -37,7 +36,8 @@ std::shared_ptr<Units> Measurement::getUnit() const {
 
 std::shared_ptr<CompoundUnit> Measurement::getCompoundUnit() const {
   // Check if the unit can be cast to CompoundUnit
-  std::shared_ptr<CompoundUnit> compoundUnit = std::dynamic_pointer_cast<CompoundUnit>(unit);
+  std::shared_ptr<CompoundUnit> compoundUnit =
+      std::dynamic_pointer_cast<CompoundUnit>(unit);
   if (!compoundUnit) {
     throw std::runtime_error("Unit is not a CompoundUnit");
   }
