@@ -71,7 +71,7 @@ void saveOutputToFile(const std::string& outputFileName,
     outputFile << response << "\n";
   }
 
-  computeAndDisplayStatistics(responsesYear1, "year1measurements.txt",
+  computeAndDisplayStatistics(responsesYear1, "argv[1]",
                               outputFile);
 
   outputFile << "\nResponses for year2measurements.txt in original order:\n";
@@ -84,7 +84,7 @@ void saveOutputToFile(const std::string& outputFileName,
     outputFile << response << "\n";
   }
 
-  computeAndDisplayStatistics(responsesYear2, "year2measurements.txt",
+  computeAndDisplayStatistics(responsesYear2, "argv[2]",
                               outputFile);
 
   outputFile.close();

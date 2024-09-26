@@ -49,22 +49,32 @@ std::shared_ptr<Units> Units::getUnitByName(const std::string& unitName) {
   }
 
   ///> Handling mass units
-  if (unitName == "milligrams" || unitName == "mg") {
+  if (unitName == "micrograms" || unitName == "ug") {
+    return std::make_unique<Mass>("g", 1e-6);  ///> Convert micrograms to grams
+  } else if (unitName == "milligrams" || unitName == "mg") {
     return std::make_unique<Mass>("g", 0.001);  ///> Convert milligrams to grams
   } else if (unitName == "centigrams" || unitName == "cg") {
     return std::make_unique<Mass>("g", 0.01);  ///> Convert centigrams to grams
+  } else if (unitName == "decigrams" || unitName == "dg") {
+    return std::make_unique<Mass>("g", 0.1);  ///> Convert decigrams to grams
   } else if (unitName == "grams" || unitName == "g") {
     return std::make_unique<Mass>("g", 1.0);  ///> Base unit: grams
   } else if (unitName == "kilograms" || unitName == "kg") {
     return std::make_unique<Mass>("g", 1000.0);  ///> Convert kilograms to grams
 
     ///> Handling length units
+  } else if (unitName == "micrometers" || unitName == "um") {
+    return std::make_unique<Length>("m",
+                                    1e-6);  ///> Convert micrometers to meters
   } else if (unitName == "millimeters" || unitName == "mm") {
     return std::make_unique<Length>("m",
                                     0.001);  ///> Convert millimeters to meters
   } else if (unitName == "centimeters" || unitName == "cm") {
     return std::make_unique<Length>("m",
                                     0.01);  ///> Convert centimeters to meters
+  } else if (unitName == "decimeters" || unitName == "dm") {
+    return std::make_unique<Length>("m",
+                                    0.1);  ///> Convert decimeters to meters
   } else if (unitName == "meters" || unitName == "m") {
     return std::make_unique<Length>("m", 1.0);  ///> Base unit: meters
   } else if (unitName == "kilometers" || unitName == "km") {
@@ -72,6 +82,10 @@ std::shared_ptr<Units> Units::getUnitByName(const std::string& unitName) {
                                     1000.0);  ///> Convert kilometers to meters
 
     ///> Handling time units
+  } else if (unitName == "milliseconds" || unitName == "ms") {
+    return std::make_unique<TimeUnit>(
+        "s",
+        0.001);  ///> Convert milliseconds to seconds
   } else if (unitName == "seconds" || unitName == "s") {
     return std::make_unique<TimeUnit>("s", 1.0);  ///> Base unit: seconds
   } else if (unitName == "minutes" || unitName == "min") {
@@ -82,12 +96,18 @@ std::shared_ptr<Units> Units::getUnitByName(const std::string& unitName) {
                                       3600.0);  ///> Convert hours to seconds
 
     ///> Handling volume units
+  } else if (unitName == "microliters" || unitName == "ul") {
+    return std::make_unique<Volume>("l",
+                                    1e-6);  ///> Convert microliters to liters
   } else if (unitName == "milliliters" || unitName == "ml") {
     return std::make_unique<Volume>("l",
                                     0.001);  ///> Convert milliliters to liters
   } else if (unitName == "centiliters" || unitName == "cl") {
     return std::make_unique<Volume>("l",
                                     0.01);  ///> Convert centiliters to liters
+  } else if (unitName == "deciliters" || unitName == "dl") {
+    return std::make_unique<Volume>("l",
+                                    0.1);  ///> Convert deciliters to liters
   } else if (unitName == "liters" || unitName == "l") {
     return std::make_unique<Volume>("l", 1.0);  ///> Base unit: liters
   } else if (unitName == "kiloliters" || unitName == "kl") {
