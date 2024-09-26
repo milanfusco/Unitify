@@ -19,10 +19,11 @@ bool MeasurementValidator::validateMeasurement(const Measurement& m) {
 
 bool MeasurementValidator::validateUnit(const std::string& unitStr) {
   std::set<std::string> validUnits = {
-      "millimeters", "mm", "centimeters", "cm",  "meters",      "m",
-      "kilometers",  "km", "milliliters", "mL",  "centiliters", "cL",
-      "liters",      "L",  "kiloliters",  "kL",  "milligrams",  "mg",
-      "centigrams",  "cg", "grams",       "g",   "kilograms",   "kg",
-      "seconds",     "s",  "minutes",     "min", "hours",       "hr"};
+      "millimeters", "mm",  "centimeters", "cm", "meters",     "m",
+      "kilometers",  "km",  "milliliters", "mL", "ml",         "centiliters",
+      "cL",          "cl",  "liters",      "L",  "l",          "kiloliters",
+      "kL",          "kl",  "milligrams",  "mg", "centigrams", "cg",
+      "grams",       "g",   "kilograms",   "kg", "seconds",    "s",
+      "minutes",     "min", "hours",       "hr"};
   return validUnits.find(unitStr) != validUnits.end();
 }

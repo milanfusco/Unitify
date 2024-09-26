@@ -22,15 +22,11 @@
 #include <stack>
 #include <stdexcept>
 #include <string>
-#include <variant>
 #include <vector>
+#include <optional>
 #include "Measurement.h"
 #include "ReportGenerator.h"
 #include "StatisticsCalculator.h"
-
-using MeasurementOrOperator =
-    std::variant<Measurement, std::string>;  ///< Type to represent a
-                                             ///< Measurement or an operator.
 
 /**
  * @class MeasurementFileProcessor
@@ -44,12 +40,7 @@ using MeasurementOrOperator =
 class MeasurementFileProcessor {
  private:
   std::string fileName;  ///< The name of the file containing measurement data.
-  std::vector<MeasurementOrOperator>
-      measurementLine;  ///< A vector of Measurement objects and operators
-                        ///< parsed from the file.
-  std::vector<std::vector<MeasurementOrOperator>>
-      measurementsList;  ///< A vector of vectors of lines of measurements and
-                         ///< operators from the file.
+  std::vector< std::vector<Measurement> >measurementsList;  ///< A list of measurements loaded from the file.
   bool isFileLoaded;     ///< Flag to check if the file has been successfully
                          ///< loaded.
   bool isValidOperator(
@@ -85,7 +76,7 @@ class MeasurementFileProcessor {
    * @param op The arithmetic operator character.
    * @return The result of the operation.
    */
-  Measurement applyOperation(const Measurement& left,
+  std::optional<Measurement> applyOperation(const Measurement& left,
                              const Measurement& right,
                              char op);
 
@@ -102,7 +93,7 @@ class MeasurementFileProcessor {
    * @param operators A vector of arithmetic operators.
    * @return The result of the arithmetic operations.
    */
-  Measurement processOperatorsWithPEMDAS(
+  std::optional<Measurement> processOperatorsWithPEMDAS(
       const std::vector<Measurement>& measurements,
       const std::vector<char>& operators);
 

@@ -18,24 +18,22 @@
 #include "Units.h"
 #include "Volume.h"
 
-// Function to process a single file
 void processFile(const std::string& fileName,
                  std::vector<std::string>& responses,
                  std::vector<std::string>& sortedResponses) {
   MeasurementFileProcessor fileProcessor(fileName);
   fileProcessor.readFile();
 
-  // Generate original order responses
   responses = fileProcessor.generateReportsInOriginalOrder();
 
-  // Generate sorted responses
   sortedResponses = fileProcessor.generateReportsInSortedOrder();
 }
 
-// Function to compute and display statistics for a given list of measurements
 void computeAndDisplayStatistics(const std::vector<std::string>& responses,
-                                 const std::string& fileName) {
+                                 const std::string& fileName,
+                                 std::ofstream& outputFile) {
   std::vector<Measurement> measurements;
+
   for (const auto& response : responses) {
     Measurement m = Measurement::fromString(response);
     measurements.push_back(m);
@@ -49,9 +47,13 @@ void computeAndDisplayStatistics(const std::vector<std::string>& responses,
   std::cout << "Mean: " << mean << "\n";
   std::cout << "Mode: " << mode << "\n";
   std::cout << "Median: " << median << "\n";
+
+  outputFile << "\nStatistics for " << fileName << ":\n";
+  outputFile << "Mean: " << mean << "\n";
+  outputFile << "Mode: " << mode << "\n";
+  outputFile << "Median: " << median << "\n";
 }
 
-// Function to save output to a file
 void saveOutputToFile(const std::string& outputFileName,
                       const std::vector<std::string>& responsesYear1,
                       const std::vector<std::string>& sortedResponsesYear1,
@@ -69,6 +71,9 @@ void saveOutputToFile(const std::string& outputFileName,
     outputFile << response << "\n";
   }
 
+  computeAndDisplayStatistics(responsesYear1, "year1measurements.txt",
+                              outputFile);
+
   outputFile << "\nResponses for year2measurements.txt in original order:\n";
   for (const auto& response : responsesYear2) {
     outputFile << response << "\n";
@@ -79,10 +84,13 @@ void saveOutputToFile(const std::string& outputFileName,
     outputFile << response << "\n";
   }
 
+  computeAndDisplayStatistics(responsesYear2, "year2measurements.txt",
+                              outputFile);
+
   outputFile.close();
 }
 
-// Main function refactored to take file paths as command-line arguments
+
 int main(int argc, char* argv[]) {
   if (argc < 3) {
     std::cerr << "Usage: " << argv[0] << " <year1_file> <year2_file>"
@@ -123,10 +131,6 @@ int main(int argc, char* argv[]) {
   for (const auto& response : sortedResponsesYear2) {
     std::cout << response << "\n";
   }
-
-  // Compute and display statistics
-  computeAndDisplayStatistics(responsesYear1, year1File);
-  computeAndDisplayStatistics(responsesYear2, year2File);
 
   // Output file name
   std::string outputFileName = "measurement_report.txt";

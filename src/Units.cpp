@@ -51,6 +51,8 @@ std::shared_ptr<Units> Units::getUnitByName(const std::string& unitName) {
   ///> Handling mass units
   if (unitName == "milligrams" || unitName == "mg") {
     return std::make_unique<Mass>("g", 0.001);  ///> Convert milligrams to grams
+  } else if (unitName == "centigrams" || unitName == "cg") {
+    return std::make_unique<Mass>("g", 0.01);  ///> Convert centigrams to grams
   } else if (unitName == "grams" || unitName == "g") {
     return std::make_unique<Mass>("g", 1.0);  ///> Base unit: grams
   } else if (unitName == "kilograms" || unitName == "kg") {
