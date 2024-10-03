@@ -84,36 +84,6 @@ void testConstructors() {
 }
 
 /**
- * @brief Unit tests for compound units.
- */
-void testCompoundUnits() {
-  // Define simple units
-  Length meters("m", 1.0);
-  TimeUnit seconds("s", 1.0);
-
-  // Create compound units (e.g., m/s)
-  std::vector<std::shared_ptr<Units>> units = {
-      std::make_shared<Length>(meters), std::make_shared<TimeUnit>(seconds)};
-  std::vector<char> operators = {'/'};
-  CompoundUnit velocity(units, operators);
-
-  std::cout << "Units in compound unit | Expected: 2, Actual: " << units.size()
-            << std::endl;
-  assert(!units.empty());
-
-  // Test measurements using compound units
-  auto velocityPtr = std::make_shared<CompoundUnit>(velocity);
-  Measurement velocityMeasurement(10.0, velocityPtr);
-  assert(velocityMeasurement.getMagnitude() == 10.0);
-  std::string unitName = velocityMeasurement.getCompoundUnitName();
-
-  std::cout << "Expected: m / s, Actual: " << unitName << std::endl;
-  assert(unitName == "m / s");
-
-  std::cout << "All compound unit tests passed." << std::endl;
-}
-
-/**
  * @brief Unit tests for unit conversions using UnitConverter.
  */
 void testUnitConversions() {
@@ -247,12 +217,19 @@ void testStatistics() {
   std::cout << "All statistics tests passed." << std::endl;
 }
 
+
+/**
+ * @brief Main function to run all unit tests.
+ * 
+ * The main function runs all unit tests for the Unitify library. The tests cover
+ * constructors, unit conversions, calculations, validators, and statistics.
+ * 
+ * @note Compound units are tested in TestCompoundUnits.cpp.
+ * @return 0 if all tests pass, 1 otherwise.
+ */
 int main() {
   // Test constructors
   testConstructors();
-
-  // Test compound units
-  testCompoundUnits();
 
   // Test unit conversions
   testUnitConversions();

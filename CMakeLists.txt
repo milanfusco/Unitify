@@ -56,18 +56,40 @@ file(GLOB TEST_SRC
     "./src/CompoundUnit.cpp"
 )
 
+file(GLOB COMPOUNDTEST_SRC
+    "./src/TestCompoundUnits.cpp"
+    "./src/Units.cpp"
+    "./src/UnitConverter.cpp"
+    "./src/UnitImplementations.cpp"
+    "./src/Measurement.cpp"
+    "./src/MeasurementFileProcessor.cpp"
+    "./src/MeasurementValidator.cpp"
+    "./src/IOStreamHandler.cpp"
+    "./src/ReportGenerator.cpp"
+    "./src/StatisticsCalculator.cpp"
+    "./src/CompoundUnit.cpp"
+)
+
 # Create the main application executable
 add_executable(Unitify ${MAIN_SRC})
 
 # Create the test executable
 add_executable(TestUnitify ${TEST_SRC})
 
+# Create the compound unit test executable
+add_executable(TestCompoundUnits ${COMPOUNDTEST_SRC})
+
 # Set include directories for both targets
 target_include_directories(Unitify PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(TestUnitify PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(TestCompoundUnits PRIVATE ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
 
 # Add the test executable to CTest
 add_test(NAME UnitTests COMMAND TestUnitify)
+
+# Add the compound unit test executable to CTest
+add_test(NAME CompoundUnitTests COMMAND TestCompoundUnits)
+
 
 # Packaging settings (for cpack if needed)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

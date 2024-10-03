@@ -44,10 +44,6 @@ double Units::getBaseFactor() const {
 }
 
 std::shared_ptr<Units> Units::getUnitByName(const std::string& unitName) {
-  if (isCompoundUnitName(unitName)) {
-    return parseCompoundUnit(unitName);
-  }
-
   ///> Handling mass units
   if (unitName == "micrograms" || unitName == "ug") {
     return std::make_unique<Mass>("g", 1e-6);  ///> Convert micrograms to grams
@@ -113,6 +109,8 @@ std::shared_ptr<Units> Units::getUnitByName(const std::string& unitName) {
   } else if (unitName == "kiloliters" || unitName == "kl") {
     return std::make_unique<Volume>("l",
                                     1000.0);  ///> Convert kiloliters to liters
+  } else if (isCompoundUnitName(unitName)) {
+    return parseCompoundUnit(unitName);
   } else {
     throw std::invalid_argument("Invalid unit type: " + unitName);
   }

@@ -97,6 +97,17 @@ class MeasurementFileProcessor {
       const std::vector<Measurement>& measurements,
       const std::vector<char>& operators);
 
+    /**
+     * @brief Processes a line of input data from the file.
+     * @param line The line of input data to process.
+     * @param lineNum The line number in the file.
+     * @param measurements The vector to store the Measurement objects.
+     * @param operators The vector to store the arithmetic operators.
+     * @return true if the line was processed successfully, false otherwise.
+     */
+    bool applyTopOperator(std::stack<Measurement>& operandStack, 
+                          std::stack<char>& operatorStack);
+
   /**
    * @brief Reads the measurement data from the file and stores it in a
    * measurementLine vector in the measurementsList vector.
@@ -104,6 +115,17 @@ class MeasurementFileProcessor {
    * Throws an exception if the file cannot be opened or read properly.
    */
   void readFile();
+
+    /**
+     * @brief Processes a line of input data from the file.
+     * @param line The line of input data to process.
+     * @param lineNum The line number in the file.
+     * @param measurements The vector to store the Measurement objects.
+     * @param operators The vector to store the arithmetic operators.
+     */
+    void processLine(const std::string& line, int lineNum,
+                     std::vector<Measurement>& measurements,
+                     std::vector<char>& operators);
 
   /**
    * @brief Sorts the loaded measurements in ascending order.

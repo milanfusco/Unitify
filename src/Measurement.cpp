@@ -49,43 +49,106 @@ std::string Measurement::getCompoundUnitName() const {
   return compoundUnit->getCompoundName();
 }
 
-void Measurement::ensureSameType(const Measurement& m) const {
+std::shared_ptr<CompoundUnit> Measurement::createCompoundUnit(
+    const Measurement& left, const Measurement& right, char operation) const {
+    
+    std::vector<std::shared_ptr<Units>> units;
+    std::vector<char> operators;
+
+    // Handle left-hand side units
+    if (auto leftCompound = std::dynamic_pointer_cast<CompoundUnit>(left.unit)) {
+        units = leftCompound->getUnits();
+        operators = leftCompound->getOperators();
+    } else {
+        units.push_back(left.unit);  // Treat as single unit
+    }
+
+    // Add right-hand side unit and operator
+    units.push_back(right.unit);
+    operators.push_back(operation);
+
+    // Check operator balance
+    if (operators.size() != units.size() - 1) {
+        std::cerr << "Units size: " << units.size() << std::endl;
+        std::cerr << "Operators size: " << operators.size() << std::endl;
+        throw std::logic_error("Number of operators does not match the number of units.");
+    }
+
+    // Return the compound unit
+    return std::make_shared<CompoundUnit>(units, operators);
+}
+
+
+
+std::string Measurement::getUnitName() const {
+  // Check if the unit is a CompoundUnit
+  std::shared_ptr<CompoundUnit> compoundUnit =
+      std::dynamic_pointer_cast<CompoundUnit>(unit);
+  if (compoundUnit) {
+    return Measurement::getCompoundUnitName();
+  } else {
+    return unit->getName();  // For regular units
+  }
+}
+
+// Refactored ensureSameType to handle conversions and return converted
+// Measurements
+std::pair<Measurement, Measurement> Measurement::ensureSameType(
+    const Measurement& m) const {
   if (unit->getType() != m.unit->getType()) {
     throw std::invalid_argument(
         "Unit types are not compatible for this operation.");
   }
-  if (unit->getName() != m.unit->getName()) {
-    Measurement leftBase = UnitConverter::convertToBaseUnit(*this);
-    Measurement rightBase = UnitConverter::convertToBaseUnit(m);
 
-    if (leftBase.getUnit()->getName() != rightBase.getUnit()->getName()) {
-      throw std::invalid_argument(
-          "Post-conversion check failed. Units are not compatible for this "
-          "operation.");
-    }
+  Measurement leftBase = UnitConverter::convertToBaseUnit(*this);
+  Measurement rightBase = UnitConverter::convertToBaseUnit(m);
+
+  if (leftBase.getUnit()->getName() != rightBase.getUnit()->getName()) {
+    throw std::invalid_argument(
+        "Post-conversion check failed. Units are not compatible for this "
+        "operation.");
   }
+
+  return {leftBase, rightBase};
 }
 
 Measurement Measurement::operator+(const Measurement& m) const {
-  ensureSameType(m);
-
-  return Measurement(magnitude + m.magnitude, unit);
+  auto [leftBase, rightBase] = ensureSameType(m);
+  return Measurement(leftBase.getMagnitude() + rightBase.getMagnitude(),
+                     leftBase.getUnit());
 }
 
 Measurement Measurement::operator-(const Measurement& m) const {
-  ensureSameType(m);
-  return Measurement(magnitude - m.magnitude, unit);
+  auto [leftBase, rightBase] = ensureSameType(m);
+  return Measurement(leftBase.getMagnitude() - rightBase.getMagnitude(),
+                     getUnit());
 }
 
 Measurement Measurement::operator*(const Measurement& m) const {
-  return Measurement(magnitude * m.magnitude, unit);
+  if (unit->getType() == m.unit->getType()) {
+    auto [leftBase, rightBase] = ensureSameType(m);
+
+    return Measurement(leftBase.getMagnitude() * rightBase.getMagnitude(),
+                       leftBase.getUnit());
+  }
+
+  auto compoundUnit = createCompoundUnit(*this, m, '*');
+  return Measurement(magnitude * m.magnitude, compoundUnit);
 }
 
 Measurement Measurement::operator/(const Measurement& m) const {
   if (m.magnitude == 0) {
     throw std::invalid_argument("Undefined, Cannot divide by zero.");
   }
-  return Measurement(magnitude / m.magnitude, unit);
+
+  if (this->unit->getType() == m.unit->getType()) {
+    auto [leftBase, rightBase] = ensureSameType(m);
+    return Measurement(leftBase.getMagnitude() / rightBase.getMagnitude(),
+                       leftBase.getUnit());
+  }
+
+  auto compoundUnit = createCompoundUnit(*this, m, '/');
+  return Measurement(this->magnitude / m.magnitude, compoundUnit);
 }
 
 bool Measurement::operator==(const Measurement& m) const {

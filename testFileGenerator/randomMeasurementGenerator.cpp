@@ -1,3 +1,17 @@
+/**
+ * @file randomMeasurementGenerator.cpp
+ * @brief Program to generate a file with random measurement expressions.
+ * 
+ * This program generates a file with random measurement expressions.
+ * Each line in the file contains three magnitudes and units, separated by operators.
+ * The magnitudes are random double values between 1 and 1000.
+ * The units are randomly chosen from predefined categories (length, mass, volume, time).
+ * The operators are randomly chosen from a list of operators (+, -, *, /).
+ * The file is generated with 687 lines. (A Martian year is 687 Earth days.)
+ * 
+ * @version 0.1
+ */
+
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
@@ -5,18 +19,33 @@
 #include <vector>
 #include <string>
 
-// Function to generate a random double value between 1 and 1000
+/**
+ * @brief Generate a random double value between 1 and 1000.
+ * 
+ * @return Random double value between 1 and 1000.
+ */
 double getRandomMagnitude() {
     return (static_cast<double>(rand()) / RAND_MAX) * 999 + 1;
 }
 
-// Function to choose a random item from a vector
+/**
+ * @brief Get a random element from a vector.
+ * 
+ * @tparam T Type of the vector elements.
+ * @param vec Vector of elements.
+ * @return Random element from the vector.
+ */
 template <typename T>
 T getRandomElement(const std::vector<T>& vec) {
     int index = rand() % vec.size();
     return vec[index];
 }
 
+/**
+ * @brief Main function to generate the file with random measurement expressions.
+ * 
+ * @return Program exit status.
+ */
 int main() {
     std::ofstream file("generated_measurements.txt");
 

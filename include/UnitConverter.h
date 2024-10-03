@@ -63,6 +63,19 @@ class UnitConverter {
   static Measurement convertCompoundUnit(
       const Measurement& measurement,
       std::shared_ptr<CompoundUnit> compoundUnit);
+
+    /**
+     * @brief Simplifies the units of two measurements based on the given operator.
+     * 
+     * @param leftUnit  The unit of the left operand.
+     * @param rightUnit The unit of the right operand.
+     * @param op      The operator to apply.
+     * @return std::shared_ptr<Units> The simplified unit.
+     */
+  static std::shared_ptr<Units> simplifyUnits(
+      const std::shared_ptr<Units>& leftUnit,
+      const std::shared_ptr<Units>& rightUnit,
+      char op);
 };
 
 #endif  // UNITCONVERTER_H

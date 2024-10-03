@@ -6,6 +6,11 @@
 #include "UnitConverter.h"
 #include "Measurement.h"
 #include "Units.h"
+#include "CompoundUnit.h"
+#include "Length.h"
+#include "TimeUnit.h"
+#include "Mass.h"
+#include "Volume.h"
 
 Measurement UnitConverter::convertToBaseUnit(const Measurement& measurement) {
   std::shared_ptr<Units> unit = measurement.getUnit();
@@ -60,4 +65,19 @@ Measurement UnitConverter::convertCompoundUnit(
       std::make_shared<CompoundUnit>(baseUnits, operators);
 
   return Measurement(baseMagnitude, baseCompoundUnit);
+}
+
+std::shared_ptr<Units> UnitConverter::simplifyUnits(const std::shared_ptr<Units>& leftUnit, 
+                                                    const std::shared_ptr<Units>& rightUnit, 
+                                                    char op) {
+    if (op == '*' && leftUnit->getName() == "m/s" && rightUnit->getName() == "s") {
+        // Simplify m/s * s to meters (m)
+        return std::make_shared<Length>("m", 1.0);
+    }
+    if (op == '/' && leftUnit->getName() == "g" && rightUnit->getName() == "L") {
+        // Simplify g / L to g/L
+        return std::make_shared<CompoundUnit>(std::vector<std::shared_ptr<Units>>{leftUnit, rightUnit}, std::vector<char>{'/'});
+    }
+    // Return null if no simplification
+    return nullptr;
 }

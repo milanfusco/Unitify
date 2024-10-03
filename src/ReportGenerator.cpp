@@ -17,7 +17,7 @@ std::string ReportGenerator::generateTextReport(
     const std::vector<Measurement>& measurements) {
   std::ostringstream oss;
   for (const auto& m : measurements) {
-    oss << m.getMagnitude() << " " << m.getUnit()->getName() << "\n";
+    oss << m.getMagnitude() << " " << m.getUnitName() << "\n";
   }
   return oss.str();
 }
@@ -27,7 +27,7 @@ std::string ReportGenerator::generateCSVReport(
   std::ostringstream oss;
   oss << "Magnitude,Unit\n";
   for (const auto& m : measurements) {
-    oss << m.getMagnitude() << "," << m.getUnit()->getName() << "\n";
+    oss << m.getMagnitude() << "," << m.getUnitName() << "\n";
   }
   return oss.str();
 }

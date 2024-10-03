@@ -20,20 +20,23 @@
 #include <vector>
 #include "Units.h"
 
+
+/**
+ * @class CompoundUnit
+ * @brief Class for representing compound units.
+ *
+ * The CompoundUnit class represents a compound unit formed by multiple units
+ * and operators. For example, "g/m/s" is a CompoundUnit with grams, meters, and
+ * seconds. The CompoundUnit can perform operations between the units. The
+ * CompoundUnit is a subclass of the Units class.
+ */
 class CompoundUnit : public Units {
  private:
   std::vector<std::shared_ptr<Units>>
       units;  ///> List of base units (e.g., grams, meters, seconds)
   std::vector<char> operators;   ///> List of operators ('*' or '/')
-  std::string compoundUnitName;  ///> Name of the compound unit
+  mutable std::string compoundUnitName;  ///> Name of the compound unit
 
-  /**
-   * @brief Sanitizes a string by removing null characters.
-   *
-   * @param input The input string to sanitize.
-   * @return The sanitized string.
-   */
-  std::string sanitizeString(const std::string& input) const;
 
   /**
    * @brief Builds the name of the compound unit.
@@ -41,12 +44,9 @@ class CompoundUnit : public Units {
    * The name of the compound unit is built by concatenating the names of the
    * base units with the operators between them.
    *
-   * For example, if the compound unit is "g/m/s", the name will be "grams /
-   * meters / seconds".
-   *
    * @return void
    */
-  void buildCompoundUnitName();
+std::string buildCompoundUnitName() const; 
 
  public:
   /**

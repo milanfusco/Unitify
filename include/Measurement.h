@@ -108,12 +108,31 @@ class Measurement {
   std::string getCompoundUnitName() const;
 
   /**
+   * @brief Create a Compound Unit object
+   * 
+   * @param left left side operand
+   * @param right right side operand
+   * @param op operator
+   * @return std::shared_ptr<CompoundUnit>  compound unit
+   */
+  std::shared_ptr<CompoundUnit> createCompoundUnit(
+      const Measurement& left, const Measurement& right, char op) const;
+
+   /**
+    * @brief Retrieves the name of the unit or compound unit.
+    *
+    * @return The name of the unit.
+    */
+  std::string getUnitName() const;
+
+
+  /**
    * @brief Ensures that addition or subtraction operations are performed on the
    * same type of measurement.
    *
    * @param m The Measurement object to compare against.
    */
-  void ensureSameType(const Measurement& m) const;
+  std::pair<Measurement, Measurement> ensureSameType(const Measurement& m) const;
 
   /**
    * @brief Overload the addition operator.

@@ -7,6 +7,7 @@
  * The CompoundUnit is a subclass of the Units class.
  */
 #include "CompoundUnit.h"
+#include <iostream>
 
 CompoundUnit::CompoundUnit(std::shared_ptr<Units> unit)
     : Units(unit->getName(), unit->getBaseFactor()) {  //> single unit
@@ -15,28 +16,42 @@ CompoundUnit::CompoundUnit(std::shared_ptr<Units> unit)
 
 CompoundUnit::CompoundUnit(const std::vector<std::shared_ptr<Units>> unitList,
                            const std::vector<char>& operatorList)
-    : Units("UnnamedCompoundUnit", 1.0), operators(operatorList) {
-  if (unitList.empty()) {
-    throw std::invalid_argument("No units provided to build compound unit.");
-  }
+    : Units(compoundUnitName, 1.0), operators(operatorList) {
   units = unitList;
+  operators = operatorList;
   buildCompoundUnitName();
-  Units::setCompoundName(compoundUnitName);
+  std::cout << "Constructed Compound Unit: " << getCompoundName() << std::endl;
 }
 
-void CompoundUnit::buildCompoundUnitName() {
+std::string CompoundUnit::buildCompoundUnitName() const {
   if (units.empty()) {
     throw std::invalid_argument("No units provided to build name.");
   }
+
+  std::cout << "Units size: " << units.size() << std::endl;          // DEBUG
+  std::cout << "Operators size: " << operators.size() << std::endl;  // DEBUG
+
+  if (operators.size() != units.size() - 1) {
+    throw std::logic_error(
+        "Number of operators does not match the number of units.");
+  }
+
   std::stringstream nameStream;
   nameStream << units[0]->getName();
+
   for (size_t i = 0; i < operators.size(); i++) {
     nameStream << ' ' << operators[i] << ' ' << units[i + 1]->getName();
   }
-  compoundUnitName = nameStream.str();
+
+  std::string name = nameStream.str();
+  std::cout << "Built compound unit name: " << name << std::endl;
+  return name;
 }
 
 std::string CompoundUnit::getCompoundName() const {
+  if (compoundUnitName.empty()) {
+    compoundUnitName = buildCompoundUnitName();
+  }
   return compoundUnitName;
 }
 
