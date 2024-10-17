@@ -5,7 +5,6 @@
  * @version 0.1
  */
 
-#include "CompoundUnit.h"
 #include "Length.h"
 #include "Mass.h"
 #include "TimeUnit.h"

@@ -42,10 +42,6 @@ class Units {
 
   virtual ~Units() = default;  ///< Virtual destructor
 
-  virtual bool isCompound() const {
-    return false;
-  }  ///< Check if the unit is a compound unit
-
   /**
    * @brief Equality operator for comparing units.
    *
@@ -61,13 +57,6 @@ class Units {
    * @return Name of the unit
    */
   std::string getName() const;
-
-  /**
-   * @brief Set the name of the compound unit
-   * @param name Name of the compound unit
-   * @return Name of the compound unit
-   */
-  std::string setCompoundName(const std::string& name);
 
   double getBaseFactor() const;
 
@@ -109,31 +98,6 @@ class Units {
    * @throws std::invalid_argument If the unit name is not recognized.
    */
   static std::shared_ptr<Units> getUnitByName(const std::string& unitName);
-
-  /**
-   * @brief Checks if a unit name corresponds to a compound unit.
-   *
-   * This method checks if a given unit name corresponds to a compound unit
-   * (e.g., "g/m/s" is a compound unit with grams, meters, and seconds,
-   * "kg*m/s^2" is a compound unit with kilograms, meters, and seconds squared).
-   *
-   * @param unitName The name of the unit to check.
-   * @return True if the unit name corresponds to a compound unit, false
-   * otherwise.
-   */
-  static bool isCompoundUnitName(const std::string& unitName);
-
-  /**
-   * @brief Parses a compound unit name into its component units.
-   *
-   * This method parses a compound unit name into its component units and
-   * operators. For example, "g/m/s" is parsed into grams, meters, and seconds.
-   *
-   * @param unitName The name of the compound unit.
-   * @return A pointer to the CompoundUnit object representing the compound
-   * unit.
-   */
-  static std::shared_ptr<Units> parseCompoundUnit(const std::string& unitName);
 };
 
 #endif  // UNITS_H

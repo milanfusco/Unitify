@@ -1,7 +1,6 @@
 /**
  * @file Measurement.h
  * @brief Header file for the Measurement class.
- *
  * The `Measurement` class represents a measurement with a numeric value and a
  * unit. It provides methods to perform arithmetic operations, comparisons,
  * conversions, and to create a Measurement object from a string representation.
@@ -15,7 +14,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include "CompoundUnit.h"
 #include "Units.h"
 
 /**
@@ -45,26 +43,6 @@ class Measurement {
               std::shared_ptr<Units> unit);  ///> Regular constructor
 
   /**
-   * @brief Constructs a new Measurement object with a unit that is not a shared
-   * pointer.
-   *
-   * @param magnitude The numeric value of the measurement.
-   * @param unit A reference to a Units object representing the unit of the
-   * measurement.
-   */
-
-  /**
-   * @brief Constructs a new Measurement object with a compound unit.s
-   *
-   * @param magnitude The numeric value of the measurement.
-   * @param unit A pointer to a CompoundUnit object representing the compound
-   * unit of the measurement.
-   */
-  Measurement(double magnitude,
-              std::shared_ptr<CompoundUnit>
-                  unit);  ///> Constructor for CompoundUnit measurements
-
-  /**
    * @brief Copy constructor for the Measurement class.
    *
    * @param other The Measurement object to copy from.
@@ -90,40 +68,6 @@ class Measurement {
    * measurement.
    */
   std::shared_ptr<Units> getUnit() const;
-
-  /**
-   * @brief Retrieves the compound unit of the measurement.
-   *
-   * @return A pointer to the CompoundUnit object representing the compound unit
-   * of the measurement.
-   * @throws std::runtime_error if the unit is not a CompoundUnit.
-   */
-  std::shared_ptr<CompoundUnit> getCompoundUnit() const;
-
-  /**
-   * @brief Retrieves the name of the compound unit.
-   *
-   * @return The name of the compound unit.
-   */
-  std::string getCompoundUnitName() const;
-
-  /**
-   * @brief Create a Compound Unit object
-   * 
-   * @param left left side operand
-   * @param right right side operand
-   * @param op operator
-   * @return std::shared_ptr<CompoundUnit>  compound unit
-   */
-  std::shared_ptr<CompoundUnit> createCompoundUnit(
-      const Measurement& left, const Measurement& right, char op) const;
-
-   /**
-    * @brief Retrieves the name of the unit or compound unit.
-    *
-    * @return The name of the unit.
-    */
-  std::string getUnitName() const;
 
 
   /**
