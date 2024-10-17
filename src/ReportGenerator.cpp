@@ -12,12 +12,14 @@
 
 #include "ReportGenerator.h"
 #include <sstream>
+#include <iomanip>
 
 std::string ReportGenerator::generateTextReport(
     const std::vector<Measurement>& measurements) {
   std::ostringstream oss;
+  oss << std::fixed << std::setprecision(2);
   for (const auto& m : measurements) {
-    oss << m.getMagnitude() << " " << m.getUnitName() << "\n";
+    oss << m.getMagnitude() << " " << m.getUnit()->getName() << "\n";
   }
   return oss.str();
 }
@@ -25,9 +27,10 @@ std::string ReportGenerator::generateTextReport(
 std::string ReportGenerator::generateCSVReport(
     const std::vector<Measurement>& measurements) {
   std::ostringstream oss;
+  oss << std::fixed << std::setprecision(2);
   oss << "Magnitude,Unit\n";
   for (const auto& m : measurements) {
-    oss << m.getMagnitude() << "," << m.getUnitName() << "\n";
+    oss << m.getMagnitude() << "," << m.getUnit()->getName() << "\n";
   }
   return oss.str();
 }

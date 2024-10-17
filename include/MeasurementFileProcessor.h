@@ -74,9 +74,15 @@ class MeasurementFileProcessor {
    * @param left The left operand Measurement.
    * @param right The right operand Measurement.
    * @param op The arithmetic operator character.
-   * @return The result of the operation.
+   * @return The result of the arithmetic operation.
+   * @throws std::invalid_argument if the units are not compatible for the
+   * operation.
+   * @throws std::invalid_argument if the division by zero is attempted.
+   * @throws std::invalid_argument if the operator is invalid.
+   * @throws std::invalid_argument if there is an error in the arithmetic
+   * operation.
    */
-  std::optional<Measurement> applyOperation(const Measurement& left,
+  Measurement applyOperation(const Measurement& left,
                              const Measurement& right,
                              char op);
 
@@ -91,9 +97,11 @@ class MeasurementFileProcessor {
    *
    * @param measurements A vector of Measurement objects.
    * @param operators A vector of arithmetic operators.
-   * @return The result of the arithmetic operations.
+   * @throws std::runtime_error if the first operation fails.
+   * @throws std::runtime_error if the second operation fails.
+   * @throws std::runtime_error if the operand stack is empty.
    */
-  std::optional<Measurement> processOperatorsWithPEMDAS(
+  Measurement processOperatorsWithPEMDAS(
       const std::vector<Measurement>& measurements,
       const std::vector<char>& operators);
 
@@ -104,6 +112,7 @@ class MeasurementFileProcessor {
      * @param measurements The vector to store the Measurement objects.
      * @param operators The vector to store the arithmetic operators.
      * @return true if the line was processed successfully, false otherwise.
+     * 
      */
     bool applyTopOperator(std::stack<Measurement>& operandStack, 
                           std::stack<char>& operatorStack);
@@ -111,8 +120,9 @@ class MeasurementFileProcessor {
   /**
    * @brief Reads the measurement data from the file and stores it in a
    * measurementLine vector in the measurementsList vector.
-   *
-   * Throws an exception if the file cannot be opened or read properly.
+   * @return void
+   * @throws std::runtime_error if the file cannot be opened or read properly.
+   * @throws std::runtime_error if the arithmetic operation fails.
    */
   void readFile();
 

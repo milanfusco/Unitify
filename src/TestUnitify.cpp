@@ -13,8 +13,6 @@
 #include <cassert>
 #include <iostream>
 #include <vector>
-
-#include "CompoundUnit.h"
 #include "IOStreamHandler.h"
 #include "Length.h"
 #include "Mass.h"
@@ -106,18 +104,6 @@ void testUnitConversions() {
             << convertedLength.getMagnitude() << std::endl;
   assert(convertedLength.getMagnitude() ==
          1000.0);  // 1 kilometer = 1000 meters
-
-  // Test compound unit conversion (m/s to base unit m/s)
-  std::vector<std::shared_ptr<Units>> units = {kilometers, seconds};
-  std::vector<char> operators = {'/'};
-  auto velocityPtr = std::make_shared<CompoundUnit>(units, operators);
-
-  Measurement velocityMeasurement(10.0, velocityPtr);  // 10 km/s
-  Measurement convertedVelocity =
-      UnitConverter::convertToBaseUnit(velocityMeasurement);
-  std::cout << "(10 km/s -> m/s) | Expected: 10000.0, Actual: "
-            << convertedVelocity.getMagnitude() << std::endl;
-  assert(convertedVelocity.getMagnitude() == 10000.0);  // 10 km/s = 10000 m/s
 
   std::cout << "All unit conversion tests passed." << std::endl;
 }

@@ -13,13 +13,11 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <optional>
 #include <set>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include "CompoundUnit.h"
 #include "IOStreamHandler.h"
 #include "Measurement.h"
 #include "ReportGenerator.h"
@@ -57,87 +55,59 @@ int MeasurementFileProcessor::getPrecedence(char op) {
   }
 }
 
-std::optional<Measurement> MeasurementFileProcessor::applyOperation(
-    const Measurement& left,
-    const Measurement& right,
-    char op) {
+Measurement MeasurementFileProcessor::applyOperation(const Measurement& left,
+                                                     const Measurement& right,
+                                                     char op) {
   try {
-    // Check if units are the same (before converting to compound unit)
-    if (left.getUnit()->getName() == right.getUnit()->getName()) {
-      // Convert both to base units
-      Measurement leftBase = UnitConverter::convertToBaseUnit(left);
-      Measurement rightBase = UnitConverter::convertToBaseUnit(right);
-
-      // Perform the arithmetic in base units
-      double newMagnitude =
-          (op == '*') ? leftBase.getMagnitude() * rightBase.getMagnitude()
-                      : leftBase.getMagnitude() / rightBase.getMagnitude();
-
-      // Return result in a single base unit
-      return Measurement(newMagnitude, leftBase.getUnit());
+    // Check if units are the same
+    if (left.getUnit()->getName() != right.getUnit()->getName()) {
+      throw std::invalid_argument(
+          "Units must be the same for arithmetic operations.");
     }
 
-    // If units are different, proceed with compound unit construction
-    std::vector<std::shared_ptr<Units>> units;
-    std::vector<char> operators;
+    // Convert both to base units
+    Measurement leftBase = UnitConverter::convertToBaseUnit(left);
+    Measurement rightBase = UnitConverter::convertToBaseUnit(right);
 
-    // Handle left-hand side units
-    std::shared_ptr<CompoundUnit> leftCompoundUnit =
-        std::dynamic_pointer_cast<CompoundUnit>(left.getUnit());
-    if (leftCompoundUnit) {
-      units = leftCompoundUnit->getUnits();
-      operators = leftCompoundUnit->getOperators();
-    } else {
-      units.push_back(left.getUnit());  // Treat as a single unit
+    // Perform the arithmetic in base units
+    double newMagnitude;
+    switch (op) {
+      case '+':
+        newMagnitude = leftBase.getMagnitude() + rightBase.getMagnitude();
+        break;
+      case '-':
+        newMagnitude = leftBase.getMagnitude() - rightBase.getMagnitude();
+        break;
+      case '*':
+        newMagnitude = leftBase.getMagnitude() * rightBase.getMagnitude();
+        break;
+      case '/':
+        if (rightBase.getMagnitude() == 0) {
+          throw std::invalid_argument("Division by zero is not allowed.");
+        }
+        newMagnitude = leftBase.getMagnitude() / rightBase.getMagnitude();
+        break;
+      default:
+        throw std::invalid_argument("Invalid operator.");
     }
 
-    // Handle right-hand side units
-    std::shared_ptr<CompoundUnit> rightCompoundUnit =
-        std::dynamic_pointer_cast<CompoundUnit>(right.getUnit());
-    if (rightCompoundUnit) {
-      units.insert(units.end(), rightCompoundUnit->getUnits().begin(),
-                   rightCompoundUnit->getUnits().end());
-    } else {
-      units.push_back(right.getUnit());
-    }
-
-    // Add the current operator between the left and right units
-    operators.push_back(op);
-
-    // Ensure the operator count matches units count - 1
-    if (operators.size() != units.size() - 1) {
-      throw std::logic_error(
-          "Number of operators does not match the number of units.");
-    }
-
-    // Create the compound unit
-    std::shared_ptr<CompoundUnit> newCompoundUnit =
-        std::make_shared<CompoundUnit>(units, operators);
-
-    std::cout << "Constructed Compound Unit: "
-              << newCompoundUnit->getCompoundName() << std::endl;
-
-    // Perform the arithmetic operation for different units
-    double newMagnitude = (op == '*')
-                              ? left.getMagnitude() * right.getMagnitude()
-                              : left.getMagnitude() / right.getMagnitude();
-
-    // Return result with a compound unit
-    return Measurement(newMagnitude, newCompoundUnit);
+    // Return result in the original left unit
+    return UnitConverter::convertToBaseUnit(
+        Measurement(newMagnitude, leftBase.getUnit()));
 
   } catch (const std::invalid_argument& e) {
     std::cerr << "Operation error: " << e.what() << std::endl;
-    return std::nullopt;
+    throw;
   }
 }
 
-std::optional<Measurement> MeasurementFileProcessor::processOperatorsWithPEMDAS(
+Measurement MeasurementFileProcessor::processOperatorsWithPEMDAS(
     const std::vector<Measurement>& measurements,
     const std::vector<char>& operators) {
   std::stack<Measurement> operandStack;
   std::stack<char> operatorStack;
 
-  std::cout << "Processing PEMDAS, operands: " << measurements.size() 
+  std::cout << "Processing PEMDAS, operands: " << measurements.size()
             << ", operators: " << operators.size() << std::endl;
 
   for (size_t i = 0; i < measurements.size(); ++i) {
@@ -149,7 +119,7 @@ std::optional<Measurement> MeasurementFileProcessor::processOperatorsWithPEMDAS(
       while (!operatorStack.empty() && getPrecedence(operatorStack.top()) >=
                                            getPrecedence(currentOperator)) {
         if (!applyTopOperator(operandStack, operatorStack)) {
-          return std::nullopt;
+          throw std::runtime_error("Failed to apply operator");
         }
       }
       operatorStack.push(currentOperator);
@@ -158,12 +128,15 @@ std::optional<Measurement> MeasurementFileProcessor::processOperatorsWithPEMDAS(
 
   while (!operatorStack.empty()) {
     if (!applyTopOperator(operandStack, operatorStack)) {
-      return std::nullopt;
+      throw std::runtime_error("Failed to apply operator");
     }
   }
 
-  return operandStack.empty() ? std::nullopt
-                              : std::optional<Measurement>{operandStack.top()};
+  if (operandStack.empty()) {
+    throw std::runtime_error("No result available");
+  }
+
+  return operandStack.top();
 }
 
 bool MeasurementFileProcessor::applyTopOperator(
@@ -181,18 +154,20 @@ bool MeasurementFileProcessor::applyTopOperator(
   char op = operatorStack.top();
   operatorStack.pop();
 
-  std::optional<Measurement> result = applyOperation(left, right, op);
-  if (!result)
+  try {
+    Measurement result = applyOperation(left, right, op);
+    operandStack.push(result);
+    return true;
+  } catch (const std::exception& e) {
+    std::cerr << "Error applying operation: " << e.what() << std::endl;
     return false;
-  operandStack.push(result.value());
-  return true;
+  }
 }
 
 void MeasurementFileProcessor::readFile() {
   std::ifstream file(fileName);
   if (!file.is_open()) {
-    std::cerr << "Failed to open file: " << fileName << std::endl;
-    return;
+    throw std::runtime_error("Failed to open file: " + fileName);
   }
 
   std::string line;
@@ -200,21 +175,18 @@ void MeasurementFileProcessor::readFile() {
 
   while (getline(file, line)) {
     std::vector<Measurement> measurements;
-    std::vector<char> operators;            
+    std::vector<char> operators;
 
     processLine(line, lineNum++, measurements, operators);
 
-    std::optional<Measurement> result =
-        processOperatorsWithPEMDAS(measurements, operators);
-
-    if (result) {
-      std::cout << "Result: " << result->getMagnitude() << " "
-                << result->getUnit()->getName() << std::endl;
-    } else {
-      std::cerr << "Error: Invalid result, operation failed." << std::endl;
+    try {
+      Measurement result = processOperatorsWithPEMDAS(measurements, operators);
+      std::cout << "Result: " << result.getMagnitude() << " "
+                << result.getUnit()->getName() << std::endl;
+      measurementsList.push_back({result});
+    } catch (const std::exception& e) {
+      throw std::runtime_error("Error: " + std::string(e.what()));
     }
-
-    measurementsList.push_back(measurements);
   }
 
   file.close();
@@ -226,7 +198,6 @@ void MeasurementFileProcessor::processLine(
     int lineNum,
     std::vector<Measurement>& measurements,
     std::vector<char>& operators) {
-  
   std::stringstream ss(line);
   double magnitude;
   std::string unitStr, operatorStr;
@@ -299,6 +270,7 @@ MeasurementFileProcessor::generateReportsInOriginalOrder() {
   for (const auto& measurements : measurementsList) {
     for (const auto& m : measurements) {
       std::ostringstream oss;
+      oss << std::fixed << std::setprecision(2);
       oss << m.getMagnitude() << " " << m.getUnit()->getName();
       reportLines.push_back(oss.str());
     }
@@ -329,6 +301,7 @@ MeasurementFileProcessor::generateReportsInSortedOrder() {
   std::vector<std::string> reportLines;
   for (const auto& m : sortedMeasurements) {
     std::ostringstream oss;
+    oss << std::fixed << std::setprecision(2);
     oss << m.getMagnitude() << " " << m.getUnit()->getName();
     reportLines.push_back(oss.str());
   }

@@ -48,34 +48,6 @@ class UnitConverter {
    */
   static double getConversionFactor(std::shared_ptr<Units> fromUnit,
                                     std::shared_ptr<Units> toUnit);
-
-  /**
-   * @brief Converts a compound unit measurement to its base unit.
-   *
-   * Converts a given compound unit measurement to its base unit by converting
-   * each unit in the compound unit to its base unit and calculating the overall
-   * magnitude based on the operators.
-   *
-   * @param measurement The compound unit measurement to convert.
-   * @param compoundUnit The compound unit to convert.
-   * @return A new Measurement object with the base unit.
-   */
-  static Measurement convertCompoundUnit(
-      const Measurement& measurement,
-      std::shared_ptr<CompoundUnit> compoundUnit);
-
-    /**
-     * @brief Simplifies the units of two measurements based on the given operator.
-     * 
-     * @param leftUnit  The unit of the left operand.
-     * @param rightUnit The unit of the right operand.
-     * @param op      The operator to apply.
-     * @return std::shared_ptr<Units> The simplified unit.
-     */
-  static std::shared_ptr<Units> simplifyUnits(
-      const std::shared_ptr<Units>& leftUnit,
-      const std::shared_ptr<Units>& rightUnit,
-      char op);
 };
 
 #endif  // UNITCONVERTER_H
